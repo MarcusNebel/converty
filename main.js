@@ -44,7 +44,7 @@ function getMagickPath() {
   if (platform() === "win32")
     return path.join(base, "windows", "magick", "magick.exe");
   if (platform() === "darwin")
-    return path.join(base, "macos", "magick");
+    return path.join(base, "macos", "magick", "bin", "magick");
   return path.join(base, "linux", "magick.AppImage");
 }
 
@@ -52,8 +52,21 @@ ipcMain.handle("magick-check", async () => {
   const magickPath = getMagickPath();
   console.log("🔍 Prüfe ImageMagick:", magickPath);
 
+  // macOS: DYLD_LIBRARY_PATH setzen, damit magick die lib-Dateien findet
+  const env =
+    platform() === "darwin"
+      ? {
+          ...process.env,
+          DYLD_LIBRARY_PATH: path.join(
+            app.isPackaged
+              ? path.join(process.resourcesPath, "bin", "macos", "magick", "lib")
+              : path.join(__dirname, "bin", "macos", "magick", "lib")
+          ),
+        }
+      : process.env;
+
   return new Promise((resolve, reject) => {
-    execFile(magickPath, ["-version"], (err, stdout, stderr) => {
+    execFile(magickPath, ["-version"], { env }, (err, stdout, stderr) => {
       if (err) reject(stderr || err.message);
       else resolve(stdout);
     });
