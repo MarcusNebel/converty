@@ -1,45 +1,43 @@
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import SetupWizard from "./pages/SetupWizard";
+import Home from "./pages/Home";
 import { useEffect, useState } from "react";
+import { checkSetup } from "./utils/setupStatus";
 
 export default function App() {
-  const [results, setResults] = useState<{
-    magick: string | null;
-    ffmpeg: string | null;
-    admzip: string | null;
-  }>({
-    magick: null,
-    ffmpeg: null,
-    admzip: null,
-  });
-  const [error, setError] = useState(null);
+  const [isSetupDone, setIsSetupDone] = useState<boolean | null>(null);
 
   useEffect(() => {
-    async function checkAll() {
-      try {
-        const magick = await window.electron.magickCheck();
-        const ffmpeg = await window.electron.ffmpegCheck();
-        const admzip = await window.electron.admZipCheck();
-        setResults({ magick, ffmpeg, admzip });
-      } catch (err: any) {
-        setError(err?.message || String(err));
-      }
-    }
-    checkAll();
+    checkSetup().then(setIsSetupDone);
   }, []);
 
+  function applyTheme(theme: string) {
+    if (theme === "system") {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+    } else {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+  }
+
+  useEffect(() => {
+    window.electron.theme.get().then((savedTheme: string) => applyTheme(savedTheme));
+  }, []);
+
+  if (isSetupDone === null) return <div>Lädt...</div>;
+
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Converty</h1>
-
-      {error && <p style={{ color: "red" }}>❌ Fehler: {error}</p>}
-
-      <h3>🧙‍♂️ ImageMagick</h3>
-      <pre>{results.magick || "Wird geprüft..."}</pre>
-
-      <h3>🎬 FFmpeg</h3>
-      <pre>{results.ffmpeg || "Wird geprüft..."}</pre>
-
-      <h3>🗜️ Adm-Zip</h3>
-      <pre>{results.admzip || "Wird geprüft..."}</pre>
-    </div>
+    <HashRouter>
+      <Routes>
+        <Route
+          path="/setup"
+          element={<SetupWizard onSetupComplete={() => setIsSetupDone(true)} />}
+        />
+        <Route
+          path="/"
+          element={isSetupDone ? <Home /> : <Navigate to="/setup" />}
+        />
+      </Routes>
+    </HashRouter>
   );
 }

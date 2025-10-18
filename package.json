@@ -18,6 +18,8 @@
     "files": [
       "dist/**/*",
       "main.js",
+      "main/**/*",
+      "backend/**/*",
       "preload.js",
       "package.json",
       "bin/**/*"
@@ -26,9 +28,23 @@
       {
         "from": "bin/",
         "to": "bin",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
-    ]
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Converty"
+    }
   },
   "scripts": {
     "dev": "vite",
@@ -42,9 +58,11 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "adm-zip": "^0.5.16",
+    "electron-store": "^11.0.2",
     "fluent-ffmpeg": "^2.1.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.4",
     "sharp": "^0.34.4"
   },
   "devDependencies": {

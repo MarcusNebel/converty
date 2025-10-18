@@ -1,0 +1,85 @@
+.intro-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--color-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+  animation: fadeIn 1s ease forwards;
+  overflow: hidden;
+}
+
+/* Textblock */
+.intro-text {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: textEnter 1.5s ease forwards 0.3s;
+}
+
+/* Untertitel */
+.intro-sub {
+  display: block;
+  font-size: 1.8rem;
+  color: var(--color-text-secondary);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+}
+
+/* App-Name */
+.intro-main {
+  display: block;
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-top: 5px;
+  font-family: "Inter", sans-serif;
+}
+
+/* Fade-in / Fade-out */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-out {
+  animation: fadeOut 1s ease forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes textEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutText {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.intro-text.fade-out {
+  animation: fadeOutText 1s ease forwards;
+}

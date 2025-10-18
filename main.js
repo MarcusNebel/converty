@@ -1,11 +1,9 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import path from "path";
 import fs from "fs";
-import { platform } from "os";
-import { execFile } from "child_process";
 import { fileURLToPath } from "url";
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
+import { registerSetupIPC } from './main/ipcHandlers.js';
+import { registerThemeIPC } from './main/ipcHandlers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,84 +13,36 @@ const preloadPath = app.isPackaged
   : path.join(__dirname, "preload.js");
 
 if (!fs.existsSync(preloadPath))
-  console.error("❌ Preload nicht gefunden:", preloadPath);
-else console.log("✅ Preload gefunden:", preloadPath);
+  console.error("Preload nicht gefunden:", preloadPath);
+else console.log("Preload gefunden:", preloadPath);
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     webPreferences: {
       preload: preloadPath,
-      contextIsolation: true,
+      contextIsolation: true, // Pflicht für contextBridge
+    nodeIntegration: false,  // Sicherheitsmaßnahme
     },
   });
-
   if (app.isPackaged) {
     win.loadFile(path.join(app.getAppPath(), "dist", "index.html"));
   } else {
-    win.loadURL("http://localhost:5173");
+    win.loadURL("http://localhost:5678"); // Vite dev server
   }
 }
 
-// 🔍 ImageMagick CLI prüfen
-function getMagickPath() {
-  const base = app.isPackaged
-    ? path.join(process.resourcesPath, "bin")
-    : path.join(__dirname, "bin");
-
-  if (platform() === "win32")
-    return path.join(base, "windows", "magick", "magick.exe");
-  if (platform() === "darwin")
-    return path.join(base, "macos", "magick", "bin", "magick");
-  return path.join(base, "linux", "magick.AppImage");
-}
-
-ipcMain.handle("magick-check", async () => {
-  const magickPath = getMagickPath();
-  console.log("🔍 Prüfe ImageMagick:", magickPath);
-
-  // macOS: DYLD_LIBRARY_PATH setzen, damit magick die lib-Dateien findet
-  const env =
-    platform() === "darwin"
-      ? {
-          ...process.env,
-          DYLD_LIBRARY_PATH: path.join(
-            app.isPackaged
-              ? path.join(process.resourcesPath, "bin", "macos", "magick", "lib")
-              : path.join(__dirname, "bin", "macos", "magick", "lib")
-          ),
-        }
-      : process.env;
-
-  return new Promise((resolve, reject) => {
-    execFile(magickPath, ["-version"], { env }, (err, stdout, stderr) => {
-      if (err) reject(stderr || err.message);
-      else resolve(stdout);
-    });
+ipcMain.handle("select-folder", async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ["openDirectory"]
   });
+  if (result.canceled) return null;
+  return result.filePaths[0];
 });
 
-// 🔍 FFmpeg prüfen (per require)
-ipcMain.handle("ffmpeg-check", async () => {
-  try {
-    const ffmpeg = require("@ffmpeg-installer/ffmpeg");
-    return `FFmpeg geladen ✅\nPfad: ${ffmpeg.path}`;
-  } catch (err) {
-    console.error("❌ FFmpeg konnte nicht geladen werden:", err);
-    throw new Error("FFmpeg konnte nicht geladen werden.");
-  }
+app.whenReady().then(() => {
+  registerSetupIPC();
+  registerThemeIPC();
+  createWindow();
 });
-
-// 🔍 Adm-Zip prüfen (per require)
-ipcMain.handle("admzip-check", async () => {
-  try {
-    require("adm-zip");
-    return "Adm-Zip erfolgreich geladen ✅";
-  } catch (err) {
-    console.error("❌ Adm-Zip konnte nicht geladen werden:", err);
-    throw new Error("Adm-Zip konnte nicht geladen werden.");
-  }
-});
-
-app.whenReady().then(createWindow);

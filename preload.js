@@ -1,7 +1,15 @@
-const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld("electron", {
-  magickCheck: () => ipcRenderer.invoke("magick-check"),
-  ffmpegCheck: () => ipcRenderer.invoke("ffmpeg-check"),
-  admZipCheck: () => ipcRenderer.invoke("admzip-check"),
+contextBridge.exposeInMainWorld('electron', {
+  theme: {
+    get: () => ipcRenderer.invoke("theme:get"),
+    set: (theme) => ipcRenderer.invoke("theme:set", theme),
+  },
+
+  setup: {
+    invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
+    selectFolder: () => ipcRenderer.invoke("select-folder"),
+    saveSetupData: (data) => ipcRenderer.invoke("setup:saveData", data),
+    getSetupData: () => ipcRenderer.invoke("setup:getData"),
+  },
 });
