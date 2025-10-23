@@ -1,0 +1,70 @@
+/* src/components/Sidebar.css */
+.sidebar {
+  width: 220px;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  height: 100vh;
+  box-shadow: var(--shadow-elevate);
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.sidebar-item:hover {
+  background-color: var(--color-primary-hover-transparent);
+}
+
+.sidebar-item.active {
+  background-color: var(--color-primary-transparent);
+  border-left-color: var(--color-primary);
+}
+
+.sidebar-item .icon {
+  margin-right: 10px;
+  font-size: 18px;
+  color: var(--color-text-secondary);
+}
+
+.sidebar-item.active .icon,
+.sidebar-item:hover .icon {
+  color: var(--color-primary);
+}
+
+.sidebar-item .label {
+  font-size: 16px;
+  color: var(--color-text);
+}
+
+.sidebar-item.active .label,
+.sidebar-item:hover .label {
+  color: var(--color-primary);
+}
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.sub-item {
+  padding: 8px 20px;
+  font-size: 14px;
+}
+
+.sub-item .icon {
+  font-size: 16px;
+}
+
+/* Hover für Unteroptionen bleibt */
+.sub-item:hover {
+  background-color: var(--color-primary-hover-transparent);
+}

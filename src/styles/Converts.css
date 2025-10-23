@@ -1,0 +1,121 @@
+.convert-page {
+  padding: 20px;
+}
+
+/* Überschriften */
+.convert-page h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text);
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.convert-page h3 {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+}
+
+/* 🔹 NEU: obere Steuerzeile */
+.top-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-surface-alt);
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-elevate);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.top-controls .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.top-controls .left span {
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.top-controls .left .custom-select {
+  display: inline-flex;
+  width: auto;
+  min-width: 160px; /* optional */
+  vertical-align: middle;
+}
+
+.top-controls .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Buttons */
+.upload-btn,
+.convert-btn {
+  padding: 10px 20px;
+  background-color: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.upload-btn:hover,
+.convert-btn:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Datei-Listenbereich */
+.convert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.convert-card-full {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: var(--color-surface-alt);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-elevate);
+  width: calc(100% - 30px);
+  gap: 20px;
+}
+
+.file-name {
+  flex: 1;
+  word-break: break-word;
+  font-weight: bold;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.file-options {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.file-options span {
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--color-text);
+  margin-right: 5px;
+}
+
+.custom-select {
+  min-width: 120px;
+}

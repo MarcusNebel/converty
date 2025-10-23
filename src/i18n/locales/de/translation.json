@@ -1,0 +1,122 @@
+{
+  "setup": {
+    "intro": {
+      "welcome_text": "Willkommen bei",
+      "app_name": "Converty"
+    },
+    "buttons": {
+      "next": "Weiter",
+      "back": "Zurück",
+      "finish": "Fertigstellen",
+      "browse": "Durchsuchen"
+    },
+    "steps": {
+      "welcome_title": "Willkommen",
+      "welcome_description": "Starte das Setup mit einem Klick auf „Weiter“.",
+      "welcome_component": "Willkommen bei Converty! Dieses Setup hilft dir, das Programm optimal einzurichten.",
+      "personal_data_title": "Persönliche Daten",
+      "personal_data_description": "Gib hier deinen Namen ein (optional).",
+      "personal_name_placeholder": "Dein Name",
+      "personal_name_info": "Dein Name dient nur zur Personalisierung des Programms!",
+      "app_settings_title": "App-Einstellungen",
+      "app_settings_description": "Lege Standardordner, Formate und Theme fest.",
+      "formats_label": "Standard-Formate:",
+      "video_label": "Videos:",
+      "image_label": "Bilder:",
+      "archive_label": "Archive:",
+      "document_label": "Dokumente:",
+      "theme_label": "App-Theme:",
+      "folder_label": "Standardordner:",
+      "folder_placeholder": "Zielordner wählen",
+      "notifications_title": "Benachrichtigungen",
+      "notifications_description": "Aktiviere oder deaktiviere Push-Benachrichtigungen.",
+      "notifications_enable": "Push-Benachrichtigungen aktivieren",
+      "final_title": "Fertig",
+      "final_name_label": "Name:",
+      "final_folder_label": "Zielordner:",
+      "final_description": "Überprüfe deine Einstellungen und starte die App.",
+      "final_not_specified": "Nicht angegeben",
+      "final_enabled": "Aktiviert",
+      "final_disabled": "Deaktiviert",
+      "language_label": "Sprache:",
+      "language_german": "Deutsch",
+      "language_english": "Englisch",
+      "libreoffice_title": "LibreOffice Installation",
+      "libreoffice_description": "Um Dokumente konvertieren zu können, muss LibreOffice installiert sein.",
+      "libreoffice_checking": "Überprüfe LibreOffice Installation...",
+      "libreoffice_installed": "LibreOffice ist bereits installiert.",
+      "libreoffice_missing": "LibreOffice ist nicht installiert.",
+      "libreoffice_install_button": "LibreOffice herunterladen und installieren",
+      "libreoffice_downloading": "LibreOffice wird heruntergeladen..."
+    }
+  },
+  "home": {
+    "theme": {
+      "label": "App-Theme:",
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
+    "buttons": {
+      "show_data": "Setup-Daten anzeigen",
+      "reset": "Setup zurücksetzen"
+    },
+    "reset_alert": "Setup zurückgesetzt! Starte die App neu, um erneut zu konfigurieren.",
+    "no_data_alert": "Keine Setup-Daten gespeichert.",
+    "show_data_alert": "Gespeicherte Setup-Daten:\n{{data}}"
+  },
+  "errors": {
+    "save_setup_failed": "Fehler beim Speichern der Setup-Daten!"
+  },
+  "converts": {
+    "media": {
+      "title": "Medien Konvertierungen",
+      "subtitle": "Unterstützte Formate: MP3, WAV, AAC, FLAC, OGG, AIFF, AC3, Opus, AMR, ALAC, MP4, AVI, MKV, MOV, WMV, FLV, WEBM",
+      "global_label": "Globales Format:",
+      "mixed_formats": "Verschiedene Formate",
+      "select_files": "Dateien auswählen",
+      "convert": "Konvertieren",
+      "no_file_selected": "Keine Datei ausgewählt!",
+      "convert_success": "Dateien erfolgreich konvertiert:\n{{files}}",
+      "convert_error": "Fehler: {{message}}",
+      "current_format": "Aktuelles Format:"
+    },
+    "image": {
+      "title": "Bild Konvertierungen",
+      "subtitle": "Unterstützte Eingabeformate: JPG, PNG, WEBP, BMP, TIFF, GIF, HEIC, AVIF",
+      "global_label": "Globales Format:",
+      "mixed_formats": "Verschiedene Formate",
+      "select_files": "Dateien auswählen",
+      "convert": "Konvertieren",
+      "no_file_selected": "Keine Datei ausgewählt!",
+      "convert_success": "Bilder erfolgreich konvertiert:\n{{files}}",
+      "convert_error": "Fehler: {{message}}",
+      "current_format": "Aktuelles Format:"
+    },
+    "archive": {
+      "title": "Archiv Konvertierungen",
+      "subtitle": "Unterstützte Eingabeformate: 7Z, ZIP, TAR, GZ, BZIP2, XZ, RAR",
+      "global_label": "Globales Format:",
+      "mixed_formats": "Verschiedene Formate",
+      "select_files": "Dateien auswählen",
+      "convert": "Konvertieren",
+      "no_file_selected": "Keine Datei ausgewählt!",
+      "convert_success": "Archive erfolgreich konvertiert:\n{{files}}",
+      "convert_error": "Fehler: {{message}}",
+      "current_format": "Aktuelles Format:"
+    },
+    "document": {
+      "title": "Dokumenten Konvertierungen",
+      "subtitle": "Unterstützte Eingabeformate: DOC, DOCX, ODT, XLS, XLSX, PPT, PPTX",
+      "global_label": "Globales Format:",
+      "mixed_formats": "Verschiedene Formate",
+      "select_files": "Dateien auswählen",
+      "convert": "Konvertieren",
+      "no_file_selected": "Keine Datei ausgewählt!",
+      "convert_success": "Dokumente erfolgreich konvertiert:\n{{files}}",
+      "convert_error": "Fehler: {{message}}",
+      "current_format": "Aktuelles Format:"
+    }
+  },
+  "loading": "Lädt..."
+}

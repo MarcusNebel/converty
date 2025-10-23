@@ -13,7 +13,7 @@
 
 
   /* Hauptfarben */
-  --color-bg: #f0f2f5;           /* dein aktueller Hintergrund */
+  --color-bg: #f0f2f5;
   --color-surface: #ffffff;
   --color-surface-alt: #e8ebf0;
   --color-border: #d2d7de;
@@ -24,7 +24,7 @@
   --color-muted: #6c757d;
 
   /* Akzentfarben */
-  --color-primary: #3a78ff;      /* optimiertes Blau */
+  --color-primary: #3a78ff;
   --color-primary-hover: #2d5eea;
   --color-primary-light: #dce7ff;
   --color-primary-transparent: rgba(52, 116, 255, 0.4);
@@ -89,6 +89,7 @@ html, body {
 * {
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: var(--scrollbar-thumb) transparent;
+  user-select: none;
 }
 
 *::-webkit-scrollbar {

@@ -9,6 +9,39 @@ interface ElectronAPI {
     saveSetupData: (data: any) => Promise<boolean>;
     getSetupData: () => Promise<any>;
   };
+  store?: {
+    get: (key: string) => Promise<any>;
+    set: (key: string, value: any) => Promise<void>;
+  };
+  app?: {
+    getLocale: () => Promise<string>;
+  };
+  converts: {
+    media: {
+      convertFiles: (files: { path: string; targetFormat: string }[]) => Promise<{ success: boolean; files: string[]; message: string }>;
+      selectFiles: () => Promise<string[]>;
+    };
+    video: {
+      convertFiles: (files: { path: string; targetFormat: string }[]) => Promise<{ success: boolean; files: string[]; message: string }>;
+      selectFiles: () => Promise<string[]>;
+    };
+    image: {
+      convertFiles: (files: { path: string; targetFormat: string }[]) => Promise<{ success: boolean; files: string[]; message: string }>;
+      selectFiles: () => Promise<string[]>;
+    };
+    archive: {
+      convertFiles: (files: { path: string; targetFormat: string }[]) => Promise<{ success: boolean; files: string[]; message: string }>;
+      selectFiles: () => Promise<string[]>;
+    };
+  };
+  
+  libreoffice: {
+    checkInstalled: () => Promise<boolean>;
+    downloadAndInstall: () => Promise<void>;
+  };
+
+  on: (channel: string, callback: (event: any, msg: any) => void) => void;
+  send?: (channel: string, data: any) => void;
 }
 
 declare global {
@@ -25,6 +58,12 @@ declare module "*setupStatus" {
 }
 
 declare module "*.jsx" {
+  import { FC } from "react";
+  const value: FC<any>;
+  export default value;
+}
+
+declare module "*.tsx" {
   import { FC } from "react";
   const value: FC<any>;
   export default value;

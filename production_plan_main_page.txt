@@ -1,0 +1,62 @@
+Startseite – Aufbau
+1. Sidebar (links)
+
+Fixiert, vertikal, schmal, Icons + Text
+
+Einträge:
+
+Dashboard (Übersicht)
+
+Konvertierungen
+
+Untermenü für verschiedene Konvertierungstypen (z. B. PDF, Bild, Video)
+
+Einstellungen
+
+Hilfe / Support
+
+Optional: Collapse-Button, um die Sidebar zu minimieren
+
+2. Hauptbereich (rechts)
+
+Dashboard (default view)
+
+Statistik-Kacheln (oben, horizontal oder 2×2)
+
+Anzahl konvertierter Dateien
+
+Gesamtgröße aller konvertierten Dateien
+
+Durchschnittliche Konvertierungszeit
+
+Optional: letzte 5 Projekte / letzte Konvertierungen
+
+Aktionsbereich:
+
+Schneller Button: „Neue Konvertierung starten“
+
+Optional: Drag & Drop Bereich für Dateien
+
+Konvertierungsbereich (wenn ausgewählt)
+
+Upload / Drag & Drop
+
+Auswahl des Konvertierungstyps
+
+Start / Stop Button
+
+Fortschrittsanzeige / Status
+
+Einstellungsbereich
+
+Einfaches Formular für globale Einstellungen (z. B. Standard-Zielordner, Sprache, Theme)
+
+3. Stil & UX
+
+Minimalistisch: klare Linien, dezente Schatten auf Kacheln
+
+Farben: sanfte Akzentfarben für Statistiken + Buttons
+
+Kacheln & Buttons leicht animiert beim Hover
+
+Sidebar fixiert, Hauptbereich scrollt bei Bedarf

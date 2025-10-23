@@ -13,7 +13,8 @@
     "asarUnpack": [
       "preload.js",
       "**/node_modules/@ffmpeg-installer/**",
-      "**/node_modules/adm-zip/**"
+      "**/node_modules/adm-zip/**",
+      "bin/**"
     ],
     "files": [
       "dist/**/*",
@@ -24,19 +25,9 @@
       "package.json",
       "bin/**/*"
     ],
-    "extraResources": [
-      {
-        "from": "bin/",
-        "to": "bin",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ],
+
     "win": {
-      "target": [
-        "nsis"
-      ]
+      "target": ["nsis"]
     },
     "nsis": {
       "oneClick": false,
@@ -44,13 +35,33 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Converty"
+    },
+
+    "mac": {
+      "target": ["dmg", "pkg", "zip"],
+      "category": "public.app-category.utilities",
+      "artifactName": "Converty-${version}-${arch}.${ext}",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Converty benötigt Zugriff auf Audio zur Dateikonvertierung.",
+        "NSCameraUsageDescription": "Converty benötigt Zugriff auf Kamera nur bei bestimmten Formaten.",
+        "NSDocumentsFolderUsageDescription": "Converty benötigt Zugriff auf deine Dateien zur Konvertierung."
+      }
+    },
+
+    "linux": {
+      "target": ["AppImage", "deb", "rpm"],
+      "category": "Utility",
+      "maintainer": "Marcus Nebel marcusnebel09@gmail.com",
+      "synopsis": "Dateikonvertierung leicht gemacht",
+      "description": "Converty – eine moderne, plattformübergreifende App zum Konvertieren von Dateien aller Art.",
+      "artifactName": "Converty-${version}-${arch}.${ext}"
     }
   },
   "scripts": {
     "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview",
-    "electron": "electron .",
+    "electron": "electron --no-sandbox .",
     "clean": "rimraf dist",
     "build-app": "npm run clean && npm run build && electron-builder",
     "build": "tsc -b && vite build"
@@ -60,8 +71,14 @@
     "adm-zip": "^0.5.16",
     "electron-store": "^11.0.2",
     "fluent-ffmpeg": "^2.1.3",
+    "i18next": "^25.6.0",
+    "i18next-http-backend": "^3.0.2",
+    "lucide-react": "^0.546.0",
+    "path": "^0.12.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-i18next": "^16.1.0",
+    "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.4",
     "sharp": "^0.34.4"
   },
@@ -70,6 +87,7 @@
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
+    "@types/sharp": "^0.31.1",
     "@vitejs/plugin-react": "^5.0.4",
     "electron": "^38.2.2",
     "electron-builder": "^26.0.12",

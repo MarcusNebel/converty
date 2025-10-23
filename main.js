@@ -2,8 +2,18 @@ import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { registerSetupIPC } from './main/ipcHandlers.js';
-import { registerThemeIPC } from './main/ipcHandlers.js';
+import {
+  registerSetupIPC,
+  registerThemeIPC,
+  registerAppIPC,
+  registerStoreIPC,
+  registerConvertMediaIPC,
+  registerConvertImageIPC,
+  registerConvertArchiveIPC,
+  registerConvertDocumentIPC,
+  registerLibreOfficeIPC
+} from './main/ipcHandlers.js';
+import { register } from "module";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,4 +55,15 @@ app.whenReady().then(() => {
   registerSetupIPC();
   registerThemeIPC();
   createWindow();
+  registerAppIPC();
+  registerStoreIPC();
+  registerConvertMediaIPC();
+  registerConvertImageIPC();
+  registerConvertArchiveIPC();
+  registerConvertDocumentIPC();
+  registerLibreOfficeIPC();
+});
+
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
 });
