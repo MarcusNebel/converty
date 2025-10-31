@@ -17,7 +17,8 @@ export default function Home() {
 
   useEffect(() => {
     const loadTheme = async () => {
-      const savedTheme = (await window.electron.theme.get()) as string;
+      const setupData = await window.electron.setup.getSetupData();
+      const savedTheme = setupData?.theme || "system"
       setTheme(savedTheme);
       applyTheme(savedTheme);
     };

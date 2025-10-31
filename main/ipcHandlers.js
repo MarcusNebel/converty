@@ -171,7 +171,7 @@ export function registerSetupIPC() {
   });
 
   ipcMain.handle('setup:getData', () => {
-    const data = store.get('setupData');
+    const data = store.get();
     return data ?? {}; // Falls noch nichts gespeichert ist, leeres Objekt
   });
 }
@@ -245,12 +245,15 @@ export function registerConvertMediaIPC() {
     try {
       const setupData = store.get("setupData");
       if (!setupData?.folder) throw new Error("Output-Ordner ist nicht gesetzt!");
+
       const outputDir = path.join(setupData.folder, "media");
       if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
       const results = [];
 
-      for (const fileObj of files) {
+      // Jede Datei einzeln konvertieren + Status senden
+      for (let i = 0; i < files.length; i++) {
+        const fileObj = files[i];
         const file = fileObj.path;
         const targetFormat = fileObj.targetFormat || "mp4";
         const ext = path.extname(file).toLowerCase();
@@ -260,13 +263,27 @@ export function registerConvertMediaIPC() {
         const format = formatMap[targetFormat];
         if (!format) throw new Error(`Format ${targetFormat} wird nicht unterstützt`);
 
+        // 🔹 Status: Datei wird verarbeitet
+        event.sender.send("media:status", { index: i, status: "processing" });
+
         await new Promise((resolve, reject) => {
           const cmd = ffmpeg(file).toFormat(format.container);
 
           if (format.audioCodec) cmd.audioCodec(format.audioCodec);
           if (format.videoCodec) cmd.videoCodec(format.videoCodec);
 
-          cmd.on("end", resolve).on("error", reject).save(destPath);
+          cmd
+            .on("end", () => {
+              // 🔹 Status: Fertig
+              event.sender.send("media:status", { index: i, status: "done" });
+              resolve(null);
+            })
+            .on("error", (err) => {
+              // 🔹 Status: Fehler (optional)
+              event.sender.send("media:status", { index: i, status: "error", message: err.message });
+              reject(err);
+            })
+            .save(destPath);
         });
 
         results.push(destPath);
@@ -289,7 +306,7 @@ export function registerConvertMediaIPC() {
 }
 
 export function registerConvertImageIPC() {
-  ipcMain.handle("image:convertFiles", async (_, files) => {
+  ipcMain.handle("image:convertFiles", async (event, files) => {
     try {
       if (!Array.isArray(files) || !files.length)
         return { success: false, message: "Keine Dateien übergeben" };
@@ -316,25 +333,40 @@ export function registerConvertImageIPC() {
 
       const results = [];
 
-      for (const f of files) {
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
         const targetFormat = f.targetFormat?.toLowerCase() || "png";
         const converter = formatMap[targetFormat];
         if (!converter) throw new Error(`Format ${targetFormat} wird nicht unterstützt`);
 
-        // Ziel-Endung bestimmen
-        let ext = targetFormat.toLowerCase();
-        if (ext === "jpeg") ext = "jpeg"; // erzwingt .jpeg statt .jpg
+        // 🔹 Status: Datei wird verarbeitet
+        event.sender.send("image:status", { index: i, status: "processing" });
 
-        const dest = path.join(
-          outputDir,
-          `${path.basename(f.path, path.extname(f.path))}.${ext}`
-        );
+        try {
+          let ext = targetFormat.toLowerCase();
+          if (ext === "jpeg") ext = "jpeg";
 
-        await converter(sharp(f.path)).toFile(dest);
-        results.push(dest);
+          const dest = path.join(
+            outputDir,
+            `${path.basename(f.path, path.extname(f.path))}.${ext}`
+          );
+
+          await converter(sharp(f.path)).toFile(dest);
+          results.push(dest);
+
+          // 🔹 Status: Fertig
+          event.sender.send("image:status", { index: i, status: "done" });
+        } catch (err) {
+          console.error(`Fehler beim Konvertieren von ${f.path}:`, err);
+          event.sender.send("image:status", {
+            index: i,
+            status: "error",
+            message: err.message,
+          });
+        }
       }
 
-      return { success: true, files: results };
+      return { success: true, files: results, message: "Konvertierung abgeschlossen" };
     } catch (err) {
       console.error("Fehler im Image-Handler:", err);
       return { success: false, message: err.message };
@@ -344,7 +376,12 @@ export function registerConvertImageIPC() {
   ipcMain.handle("image:selectFiles", async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog({
       properties: ["openFile", "multiSelections"],
-      filters: [{ name: "Bilder", extensions: ["png", "jpg", "jpeg", "webp", "bmp", "tiff","bmp","gif"] }],
+      filters: [
+        {
+          name: "Bilder",
+          extensions: ["svg", "png", "jpg", "jpeg", "webp", "bmp", "tiff", "gif", "avif", "heic", "heif"],
+        },
+      ],
     });
     return canceled ? [] : filePaths;
   });
@@ -401,7 +438,7 @@ export function registerConvertArchiveIPC() {
     return name;
   }
 
-  ipcMain.handle("archive:convertFiles", async (_, files) => {
+  ipcMain.handle("archive:convertFiles", async (event, files) => {
     try {
       if (!Array.isArray(files) || files.length === 0)
         return { success: false, files: [], message: "Keine Dateien übergeben." };
@@ -429,60 +466,42 @@ export function registerConvertArchiveIPC() {
 
       const singleFileFormats = ["gz", "bz2", "xz"]; // zuerst .tar erstellen
 
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
         const inputFile = file.path;
         const targetFormat = file.targetFormat?.toLowerCase() || "zip";
-        const ext = path.extname(inputFile).slice(1).toLowerCase();
         const baseName = getCleanBaseName(inputFile);
-        let outputFile = path.join(outputDir, `${baseName}.${targetFormat}`);
-
-        if (!creatableFormats[targetFormat]) {
-          results.push({
-            file: inputFile,
-            message: `Format ${targetFormat} kann nicht erstellt werden.`,
-            success: false,
-          });
-          continue;
-        }
-
         const tempDir = path.join(outputDir, `${baseName}_tmp`);
         fs.mkdirSync(tempDir, { recursive: true });
 
-        try {
-          console.log("=== Konvertierung startet ===");
-          console.log("Input File:", inputFile);
-          console.log("Target Format:", targetFormat);
-          console.log("Temp Dir:", tempDir);
+        // 🔹 Status: Datei wird verarbeitet
+        event.sender.send("archive:status", { index: i, status: "processing" });
 
-          // 1️⃣ Input immer zuerst entpacken
+        try {
           console.log("Entpacke Input...");
-          console.log("Starte rekursives Entpacken...");
           await extractRecursive(sevenZipPath, inputFile, tempDir);
           console.log("Rekursives Entpacken abgeschlossen.");
-          console.log("Entpacken erfolgreich.");
 
-          // 2️⃣ Zielpacken
+          let outputFile = path.join(outputDir, `${baseName}.${targetFormat}`);
+
           if (singleFileFormats.includes(targetFormat)) {
             const tarFile = path.join(tempDir, `${baseName}.tar`);
             await run7zip(sevenZipPath, ["a", "-ttar", tarFile, "*"], { cwd: tempDir });
-
             outputFile = path.join(outputDir, `${baseName}.tar.${targetFormat}`);
             await run7zip(sevenZipPath, ["a", creatableFormats[targetFormat], outputFile, tarFile]);
           } else {
-            // Packe den INHALT von tempDir, nicht tempDir selbst
-            outputFile = path.join(outputDir, `${baseName}.${targetFormat}`);
-            console.log("Packe Temp-Ordnerinhalt in Format:", targetFormat);
-            console.log("7-Zip Args:", ["a", creatableFormats[targetFormat], outputFile, "*"], { cwd: tempDir });
             await run7zip(sevenZipPath, ["a", creatableFormats[targetFormat], outputFile, "*"], { cwd: tempDir });
-            console.log("Packen erfolgreich.");
           }
 
           results.push(outputFile);
+
+          // 🔹 Status: Fertig
+          event.sender.send("archive:status", { index: i, status: "done" });
         } catch (err) {
           console.error("Fehler während der Konvertierung:", err);
           results.push({ file: inputFile, message: `Fehler: ${err.message}`, success: false });
+          event.sender.send("archive:status", { index: i, status: "error", message: err.message });
         } finally {
-          console.log("Lösche Temp-Ordner:", tempDir);
           fs.rmSync(tempDir, { recursive: true, force: true });
         }
       }
@@ -527,7 +546,7 @@ export function registerConvertDocumentIPC() {
     return allowedOutputMap[ext] || [];
   });
 
-  ipcMain.handle("document:convertFiles", async (_, files) => {
+  ipcMain.handle("document:convertFiles", async (event, files) => {
     console.log("[DEBUG][Documents] Starte Dokumenten-Konvertierung...");
 
     try {
@@ -545,10 +564,14 @@ export function registerConvertDocumentIPC() {
       const results = [];
       let hasError = false;
 
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
         const inputFile = file.path;
         const ext = path.extname(inputFile).slice(1).toLowerCase();
         const targetFormat = file.targetFormat?.toLowerCase() || "pdf";
+
+        // 🔹 Status: Datei wird verarbeitet
+        event.sender.send("document:status", { index: i, status: "processing" });
 
         try {
           if (!supportedInputFormats.includes(ext)) {
@@ -564,17 +587,22 @@ export function registerConvertDocumentIPC() {
             const args = ["--headless", "--convert-to", targetFormat, "--outdir", outputDir, inputFile];
             execFile(librePath, args, (error) => {
               if (error) reject(error);
-              else resolve();
+              else resolve(null);
             });
           });
 
           const baseName = path.basename(inputFile, path.extname(inputFile));
-          // Nur den Pfad als String pushen
           results.push(path.join(outputDir, `${baseName}.${targetFormat}`));
+
+          // 🔹 Status: Fertig
+          event.sender.send("document:status", { index: i, status: "done" });
         } catch (err) {
           console.error(`[ERROR][Documents] Datei konnte nicht konvertiert werden: ${inputFile}`, err);
           results.push({ file: inputFile, success: false, message: err.message });
           hasError = true;
+
+          // 🔹 Status: Fehler
+          event.sender.send("document:status", { index: i, status: "error", message: err.message });
         }
       }
 

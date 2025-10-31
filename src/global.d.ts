@@ -9,11 +9,11 @@ interface ElectronAPI {
     saveSetupData: (data: any) => Promise<boolean>;
     getSetupData: () => Promise<any>;
   };
-  store?: {
+  store: {
     get: (key: string) => Promise<any>;
     set: (key: string, value: any) => Promise<void>;
   };
-  app?: {
+  app: {
     getLocale: () => Promise<string>;
   };
   converts: {
@@ -33,15 +33,21 @@ interface ElectronAPI {
       convertFiles: (files: { path: string; targetFormat: string }[]) => Promise<{ success: boolean; files: string[]; message: string }>;
       selectFiles: () => Promise<string[]>;
     };
+    document: {
+      convertFiles: (files: { path: string; targetFormat: string }[]) => Promise<{ success: boolean; files: string[]; message: string }>;
+      selectFiles: () => Promise<string[]>;
+    };
   };
-  
   libreoffice: {
     checkInstalled: () => Promise<boolean>;
     downloadAndInstall: () => Promise<void>;
   };
-
   on: (channel: string, callback: (event: any, msg: any) => void) => void;
-  send?: (channel: string, data: any) => void;
+  ipcRenderer: {
+    on: (channel: string, listener: (event: any, ...args: any[]) => void) => void;
+    removeAllListeners: (channel: string) => void;
+    send: (channel: string, data?: any) => void;
+  };
 }
 
 declare global {
@@ -50,7 +56,6 @@ declare global {
   }
 }
 
-// Für SetupStatus-Utils
 declare module "*setupStatus" {
   export function checkSetup(): Promise<boolean>;
   export function completeSetup(): Promise<void>;

@@ -1,0 +1,37 @@
+import React from "react";
+
+interface IconProps {
+  width?: number;
+  height?: number;
+  className?: string;
+}
+
+const VideoIcon: React.FC<IconProps> = ({ width = 40, height = 40, className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={width}
+    height={height}
+    fill="none"
+    viewBox="0 0 40 40"
+    className={className}
+  >
+    <path fill="#155EEF" d="M4 4a4 4 0 0 1 4-4h16l12 12v24a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" />
+    <path fill="#fff" d="m24 0 12 12h-8a4 4 0 0 1-4-4z" opacity={0.3} />
+    <g clipPath="url(#video_svg__a)">
+      <path
+        stroke="#fff"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M13.333 24h13.334m-13.334-3.333h3.334m6.666 0h3.334m-13.334 6.666h3.334m6.666 0h3.334m-10 3.334V17.333m6.666 13.334V17.333m-6.8 13.334h6.934c1.12 0 1.68 0 2.108-.218a2 2 0 0 0 .874-.874c.218-.428.218-.988.218-2.108v-6.934c0-1.12 0-1.68-.218-2.108a2 2 0 0 0-.874-.874c-.428-.218-.988-.218-2.108-.218h-6.934c-1.12 0-1.68 0-2.108.218a2 2 0 0 0-.874.874c-.218.428-.218.988-.218 2.108v6.934c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.428.218.988.218 2.108.218"
+      />
+    </g>
+    <defs>
+      <clipPath id="video_svg__a">
+        <path fill="#fff" d="M12 16h16v16H12z" />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
+export default VideoIcon;

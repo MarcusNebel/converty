@@ -77,7 +77,6 @@
       "select_files": "Select files",
       "convert": "Convert",
       "no_file_selected": "No file selected!",
-      "convert_success": "Files successfully converted:\n{{files}}",
       "convert_error": "Error: {{message}}",
       "current_format": "Current format:"
     },
@@ -89,7 +88,6 @@
       "select_files": "Select files",
       "convert": "Convert",
       "no_file_selected": "No file selected!",
-      "convert_success": "Images successfully converted:\n{{files}}",
       "convert_error": "Error: {{message}}",
       "current_format": "Current format:"
     },
@@ -101,7 +99,6 @@
       "select_files": "Select files",
       "convert": "Convert",
       "no_file_selected": "No file selected!",
-      "convert_success": "Archives successfully converted:\n{{files}}",
       "convert_error": "Error: {{message}}",
       "current_format": "Current format:"
     },
@@ -113,10 +110,32 @@
       "select_files": "Select Files",
       "convert": "Convert",
       "no_file_selected": "No file selected!",
-      "convert_success": "Documents converted successfully:\n{{files}}",
       "convert_error": "Error: {{message}}",
       "current_format": "Current Format:"
+    },
+    "status": {
+      "queued": "In Queue",
+      "processing": "In Progress",
+      "done": "Done"
     }
+  },
+  "dashboard": {
+    "overall_usage": "Overall Usage",
+    "converted_files": "Converted Files",
+    "total_size": "Total Size",
+    "avg_conversion_time": "Average Time",
+    "last_converted_files": "Last Converted Files",
+    "start_new_conversion": "Start New Conversion",
+    "drag_and_drop_files": "Drag and drop files here"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "media": "Media",
+    "image": "Image",
+    "archive": "Archive",
+    "document": "Document",
+    "settings": "Settings",
+    "help": "Help"
   },
   "loading": "Loading..."
 }

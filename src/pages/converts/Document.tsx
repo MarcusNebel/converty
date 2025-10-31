@@ -1,4 +1,4 @@
-import { FaFileWord } from "react-icons/fa";
+import { FaFileAlt } from "react-icons/fa";
 import ConvertPage from "./ConvertPage";
 
 const formats = [
@@ -12,7 +12,7 @@ const formats = [
 
 const Document = () => (
   <ConvertPage
-    icon={FaFileWord}
+    icon={FaFileAlt}
     type="document"
     formats={formats}
     electronHandler={window.electron.converts.document}

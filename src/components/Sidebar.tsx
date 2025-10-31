@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { FaFileAlt, FaCog, FaQuestionCircle, FaVideo, FaImage, FaArchive } from "react-icons/fa";
 import { MdSpaceDashboard } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 import "../styles/Sidebar.css";
 
 type SidebarProps = {
@@ -9,59 +10,73 @@ type SidebarProps = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ active, onSelect }) => {
-  const [convertOpen, setConvertOpen] = useState(false);
-
-  const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: <MdSpaceDashboard /> },
-    { id: "convert", label: "Konvertierungen", icon: <FaFileAlt />, submenu: [
-      { id: "convert-media", label: "Medien", icon: <FaVideo /> },
-      { id: "convert-image", label: "Bild", icon: <FaImage /> },
-      { id: "convert-archive", label: "Archiv", icon: <FaArchive /> },
-      { id: "convert-document", label: "Dokument", icon: <FaFileAlt /> },
-    ] },
-    { id: "settings", label: "Einstellungen", icon: <FaCog /> },
-    { id: "help", label: "Hilfe", icon: <FaQuestionCircle /> },
-  ];
-
-  const handleItemClick = (item: typeof menuItems[0]) => {
-    if(item.submenu) {
-      setConvertOpen(!convertOpen); // nur Untermenü auf-/zuklappen
-    } else {
-      onSelect(item.id);
-    }
-  }
-
-  const isConvertActive = menuItems[1].submenu?.some(sub => sub.id === active);
+  const { t } = useTranslation();
 
   return (
     <div className="sidebar">
-      <h1 className="head-title">Converty</h1>
-      {menuItems.map((item) => (
-        <React.Fragment key={item.id}>
-          <div
-            className={`sidebar-item ${active === item.id || (item.id === "convert" && isConvertActive) ? "active" : ""}`}
-            onClick={() => handleItemClick(item)}
-          >
-            <span className="icon">{item.icon}</span>
-            <span className="label">{item.label}</span>
-          </div>
 
-          {item.submenu && convertOpen && (
-            <div className="submenu">
-              {item.submenu.map(sub => (
-                <div
-                  key={sub.id}
-                  className={`sidebar-item sub-item ${active === sub.id ? "active" : ""}`}
-                  onClick={() => onSelect(sub.id)}
-                >
-                  <span className="icon">{sub.icon}</span>
-                  <span className="label">{sub.label}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </React.Fragment>
-      ))}
+      <div className="top">
+        <h1 className="head-title">Converty</h1>
+
+        {/* Dashboard */}
+        <div
+          className={`sidebar-item ${active === "dashboard" ? "active" : ""}`}
+          onClick={() => onSelect("dashboard")}
+        >
+          <span className="icon"><MdSpaceDashboard /></span>
+          <span className="label">{t("sidebar.dashboard")}</span>
+        </div>
+
+        {/* Konvertierungen */}
+        <div
+          className={`sidebar-item  ${active === "convert-media" ? "active" : ""}`}
+          onClick={() => onSelect("convert-media")}
+        >
+          <span className="icon"><FaVideo /></span>
+          <span className="label">{t("sidebar.media")}</span>
+        </div>
+        <div
+          className={`sidebar-item  ${active === "convert-image" ? "active" : ""}`}
+          onClick={() => onSelect("convert-image")}
+        >
+          <span className="icon"><FaImage /></span>
+          <span className="label">{t("sidebar.image")}</span>
+        </div>
+        <div
+          className={`sidebar-item  ${active === "convert-archive" ? "active" : ""}`}
+          onClick={() => onSelect("convert-archive")}
+        >
+          <span className="icon"><FaArchive /></span>
+          <span className="label">{t("sidebar.archive")}</span>
+        </div>
+        <div
+          className={`sidebar-item  ${active === "convert-document" ? "active" : ""}`}
+          onClick={() => onSelect("convert-document")}
+        >
+          <span className="icon"><FaFileAlt /></span>
+          <span className="label">{t("sidebar.document")}</span>
+        </div>
+      </div>
+
+      <div className="bottom">
+        {/* Einstellungen */}
+        <div
+          className={`sidebar-item ${active === "settings" ? "active" : ""}`}
+          onClick={() => onSelect("settings")}
+        >
+          <span className="icon"><FaCog /></span>
+          <span className="label">{t("sidebar.settings")}</span>
+        </div>
+
+        {/* Hilfe */}
+        <div
+          className={`sidebar-item ${active === "help" ? "active" : ""}`}
+          onClick={() => onSelect("help")}
+        >
+          <span className="icon"><FaQuestionCircle /></span>
+          <span className="label">{t("sidebar.help")}</span>
+        </div>
+      </div>
     </div>
   );
 };

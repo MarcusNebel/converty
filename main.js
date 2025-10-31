@@ -13,7 +13,6 @@ import {
   registerConvertDocumentIPC,
   registerLibreOfficeIPC
 } from './main/ipcHandlers.js';
-import { register } from "module";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,6 +48,18 @@ ipcMain.handle("select-folder", async () => {
   });
   if (result.canceled) return null;
   return result.filePaths[0];
+});
+
+ipcMain.handle("get-file-size", (event, path) => {
+  console.log("get-file-size aufgerufen für:", path);
+  try {
+    const size = fs.statSync(path).size;
+    console.log("Größe (Bytes):", size);
+    return size;
+  } catch (e) {
+    console.error("Dateigröße konnte nicht gelesen werden:", path, e);
+    return 0;
+  }
 });
 
 app.whenReady().then(() => {

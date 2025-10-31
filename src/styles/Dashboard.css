@@ -69,66 +69,38 @@ h2 {
   font-family: 'Digital 7', monospace;
 }
 
-.actions-section {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.primary-btn {
-  background-color: var(--color-primary);
-  color: #fff;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.primary-btn:hover {
-  background-color: var(--color-primary-hover);
-}
-
-.drag-drop-area {
-  border: 2px dashed var(--color-primary);
-  border-radius: 8px;
-  padding: 25px;
-  text-align: center;
-  color: var(--color-text-secondary);
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.drag-drop-area:hover {
-  background-color: rgba(0, 255, 204, 0.05); /* leichtes Highlight */
-  border-color: var(--color-primary);
-}
-
 .files-grid {
   display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .file-card {
+  flex: 1 1 calc(33.333% - 20px); /* 3 Karten pro Zeile mit Abstand */
   background-color: var(--color-surface-alt);
   padding: 15px;
   border-radius: 10px;
   box-shadow: var(--shadow-elevate);
   display: flex;
-  flex-direction: column;
-  min-width: 180px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  box-sizing: border-box;
+}
+
+.file-arrow-right {
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .file-name {
   font-weight: bold;
   font-size: 14px;
-  margin-bottom: 5px;
   color: var(--color-text);
+  word-break: break-all;
 }
 
 .file-size {

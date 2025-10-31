@@ -34,6 +34,7 @@
   --color-success: #2ecc71;
   --color-warning: #f1c40f;
   --color-error: #e74c3c;
+  --color-error-hover: #c0392b;
 
   /* Schatten und Effekte */
   --shadow-elevate: 0 4px 10px rgba(0, 0, 0, 0.08);
@@ -65,6 +66,7 @@
   --color-success: #44d38c;
   --color-warning: #f7c948;
   --color-error: #ff5c5c;
+  --color-error-hover: #c0392b;
 
   /* Schatten und Effekte */
   --shadow-elevate: 0 4px 16px rgba(0, 0, 0, 0.6);
@@ -111,7 +113,7 @@ html, body {
   background-color: var(--scrollbar-thumb-hover);
 }
 
-:focus {
+input:focus {
   outline: none;
   border-color: var(--color-primary-hover);
   box-shadow: 0 0 5px var(--color-primary-transparent);

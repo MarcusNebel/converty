@@ -77,19 +77,17 @@
       "select_files": "Dateien auswählen",
       "convert": "Konvertieren",
       "no_file_selected": "Keine Datei ausgewählt!",
-      "convert_success": "Dateien erfolgreich konvertiert:\n{{files}}",
       "convert_error": "Fehler: {{message}}",
       "current_format": "Aktuelles Format:"
     },
     "image": {
       "title": "Bild Konvertierungen",
-      "subtitle": "Unterstützte Eingabeformate: JPG, PNG, WEBP, BMP, TIFF, GIF, HEIC, AVIF",
+      "subtitle": "Unterstützte Eingabeformate: JPG, PNG, WEBP, BMP, TIFF, GIF, HEIC, AVIF, SVG",
       "global_label": "Globales Format:",
       "mixed_formats": "Verschiedene Formate",
       "select_files": "Dateien auswählen",
       "convert": "Konvertieren",
       "no_file_selected": "Keine Datei ausgewählt!",
-      "convert_success": "Bilder erfolgreich konvertiert:\n{{files}}",
       "convert_error": "Fehler: {{message}}",
       "current_format": "Aktuelles Format:"
     },
@@ -101,7 +99,6 @@
       "select_files": "Dateien auswählen",
       "convert": "Konvertieren",
       "no_file_selected": "Keine Datei ausgewählt!",
-      "convert_success": "Archive erfolgreich konvertiert:\n{{files}}",
       "convert_error": "Fehler: {{message}}",
       "current_format": "Aktuelles Format:"
     },
@@ -113,10 +110,32 @@
       "select_files": "Dateien auswählen",
       "convert": "Konvertieren",
       "no_file_selected": "Keine Datei ausgewählt!",
-      "convert_success": "Dokumente erfolgreich konvertiert:\n{{files}}",
       "convert_error": "Fehler: {{message}}",
       "current_format": "Aktuelles Format:"
+    },
+    "status": {
+      "queued": "In Warteschlange",
+      "processing": "In Bearbeitung",
+      "done": "Fertig"
     }
+  },
+  "dashboard": {
+    "overall_usage": "Gesamtnutzung",
+    "converted_files": "Konvertierte Dateien",
+    "total_size": "Gesamtgröße",
+    "avg_conversion_time": "Durchschnittliche Zeit",
+    "last_converted_files": "Zuletzt konvertierte Dateien",
+    "start_new_conversion": "Neue Konvertierung starten",
+    "drag_and_drop_files": "Dateien hierher ziehen und ablegen"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "media": "Medien",
+    "image": "Bild",
+    "archive": "Archiv",
+    "document": "Dokument",
+    "settings": "Einstellungen",
+    "help": "Hilfe"
   },
   "loading": "Lädt..."
 }
