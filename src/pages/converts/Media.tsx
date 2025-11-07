@@ -19,6 +19,10 @@ const formats = [
   { value: "wmv", label: "WMV (.wmv)" },
   { value: "flv", label: "FLV (.flv)" },
   { value: "webm", label: "WEBM (.webm)" },
+  { value: "mpg", label: "MPG (.mpg)" },
+  { value: "ts", label: "TS (.ts)" },
+  { value: "gif", label: "GIF (.gif)" },
+  { value: "hevc_mp4", label: "HEVC_MP4 (.hevc_mp4)" },
 ];
 
 const Media = () => (

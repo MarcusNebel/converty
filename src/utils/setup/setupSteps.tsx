@@ -135,7 +135,6 @@ export const AppSettingsStep = ({ setupData, updateSetupData, applyTheme }: Setu
             onChange={(val) => {
               updateSetupData("theme", val);
               applyTheme?.(val);
-              window.electron.theme.set(val);
             }}
             placeholder={t("setup.steps.theme_label")}
           />

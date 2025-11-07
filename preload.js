@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('electron', {
     selectFolder: () => ipcRenderer.invoke("select-folder"),
     saveSetupData: (data) => ipcRenderer.invoke("setup:saveData", data),
     getSetupData: () => ipcRenderer.invoke("setup:getData"),
+    getElectronStoreData: () => ipcRenderer.invoke("setup:getElectronStoreData"),
   },
 
   app: {
@@ -39,6 +40,10 @@ contextBridge.exposeInMainWorld('electron', {
       selectFiles: () => ipcRenderer.invoke("document:selectFiles"),
     },
   },
+  update: {
+    check: () => ipcRenderer.invoke("update:check"),
+    download: (url) => ipcRenderer.invoke("update:download", url),
+  },
 
   libreoffice: {
     checkInstalled: () => ipcRenderer.invoke("libreoffice:checkInstalled"),
@@ -55,7 +60,9 @@ contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
     on: (channel, listener) => ipcRenderer.on(channel, listener),
     removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
+    removeListener: (channel, func) => ipcRenderer.removeListener(channel, func),
     send: (channel, data) => ipcRenderer.send(channel, data),
+    invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
   },
   getFileSize: (path) => ipcRenderer.invoke("get-file-size", path),
 });

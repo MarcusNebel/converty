@@ -14,6 +14,7 @@
   box-shadow: var(--shadow-elevate);
   box-sizing: border-box;
   border: 2px solid var(--color-border);
+  position: relative;
 }
 
 .head-title {
@@ -69,4 +70,115 @@
 .sidebar-item.active .label,
 .sidebar-item:hover .label {
   color: var(--color-primary);
+}
+
+/* Notification Panel */
+.notification-panel {
+  position: absolute;
+  left: 240px;
+  bottom: 100px;
+  width: 300px;
+  background-color: var(--color-surface); /* Hauptoberfläche */
+  color: var(--color-text);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px var(--color-shadow-soft); /* weicher Schatten */
+  border: 2px solid var(--color-border); /* dezenter Rand */
+  padding: 16px 18px;
+  z-index: 1000;
+  animation: slideIn 0.25s ease-out forwards;
+}
+
+.notification-panel.closing {
+  animation: slideOut 0.25s ease-in forwards;
+}
+
+.notification-panel::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  bottom: 30px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-surface);
+  border-left: 2px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
+  transform: rotate(45deg);
+  border-bottom-left-radius: 4px;
+}
+
+.notification-panel h3 {
+  margin: 0 0 10px 0;
+  font-size: 17px;
+  font-weight: bold;
+  color: var(--color-text);
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 6px;
+}
+
+.notification-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.notification-panel li {
+  padding: 10px 8px;
+  margin-bottom: 6px;
+  border-radius: 12px;
+  background-color: var(--color-surface-hover); /* Hover-freundliche Hintergrundfarbe */
+  transition: background-color 0.2s ease;
+}
+
+.notification-panel li:hover {
+  background-color: var(--color-primary-hover-transparent); /* leichtes Highlight bei Hover */
+}
+
+/* Notification Icon mit Badge */
+.notification-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: var(--color-badge); /* Akzentfarbe für Badge */
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Animationen Panel */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
 }

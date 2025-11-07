@@ -13,6 +13,7 @@ import {
   registerConvertDocumentIPC,
   registerLibreOfficeIPC
 } from './main/ipcHandlers.js';
+import { registerUpdateIPC } from "./main/updateHandler.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -73,6 +74,7 @@ app.whenReady().then(() => {
   registerConvertArchiveIPC();
   registerConvertDocumentIPC();
   registerLibreOfficeIPC();
+  registerUpdateIPC();
 });
 
 app.on("window-all-closed", () => {

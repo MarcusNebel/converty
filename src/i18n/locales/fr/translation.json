@@ -1,0 +1,173 @@
+{
+  "setup": {
+    "intro": {
+      "welcome_text": "Bienvenue sur",
+      "app_name": "Converty"
+    },
+    "buttons": {
+      "next": "Suivant",
+      "back": "Précédent",
+      "finish": "Terminer",
+      "browse": "Parcourir"
+    },
+    "steps": {
+      "welcome_title": "Bienvenue",
+      "welcome_description": "Démarrez l'installation en cliquant sur 'Suivant'.",
+      "welcome_component": "Bienvenue sur Converty ! Ce configurateur vous aidera à paramétrer le programme de façon optimale.",
+      "personal_data_title": "Données personnelles",
+      "personal_data_description": "Entrez votre nom ici (facultatif).",
+      "personal_name_placeholder": "Votre nom",
+      "personal_name_info": "Votre nom est uniquement utilisé pour personnaliser le programme !",
+      "app_settings_title": "Paramètres de l'application",
+      "app_settings_description": "Définissez les dossiers par défaut, les formats et le thème.",
+      "formats_label": "Formats par défaut :",
+      "video_label": "Vidéos :",
+      "image_label": "Images :",
+      "archive_label": "Archives :",
+      "document_label": "Documents :",
+      "theme_label": "Thème de l'application :",
+      "folder_label": "Dossier par défaut :",
+      "folder_placeholder": "Sélectionnez le dossier cible",
+      "notifications_title": "Notifications",
+      "notifications_description": "Activer ou désactiver les notifications push.",
+      "notifications_enable": "Activer les notifications push",
+      "final_title": "Terminer",
+      "final_name_label": "Nom :",
+      "final_folder_label": "Dossier cible :",
+      "final_description": "Vérifiez vos paramètres et lancez l'application.",
+      "final_not_specified": "Non spécifié",
+      "final_enabled": "Activé",
+      "final_disabled": "Désactivé",
+      "language_label": "Langue :",
+      "language_german": "Allemand",
+      "language_english": "Anglais",
+      "language_french": "Français",
+      "libreoffice_title": "Installation de LibreOffice",
+      "libreoffice_description": "Pour convertir des documents, LibreOffice doit être installé.",
+      "libreoffice_checking": "Vérification de l'installation de LibreOffice…",
+      "libreoffice_installed": "LibreOffice est déjà installé.",
+      "libreoffice_missing": "LibreOffice n'est pas installé.",
+      "libreoffice_install_button": "Télécharger et installer LibreOffice",
+      "libreoffice_downloading": "Téléchargement de LibreOffice en cours…"
+    }
+  },
+  "home": {
+    "theme": {
+      "label": "Thème de l'application :",
+      "system": "Système",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "buttons": {
+      "show_data": "Afficher les données de configuration",
+      "reset": "Réinitialiser la configuration"
+    },
+    "reset_alert": "Configuration réinitialisée ! Redémarrez l'application pour reconfigurer.",
+    "no_data_alert": "Aucune donnée de configuration enregistrée.",
+    "show_data_alert": "Données de configuration enregistrées :\n{{data}}"
+  },
+  "errors": {
+    "save_setup_failed": "Échec de l'enregistrement des données de configuration !"
+  },
+  "converts": {
+    "media": {
+      "title": "Conversions multimédia",
+      "subtitle": "Formats pris en charge : MP3, WAV, AAC, FLAC, OGG, AIFF, AC3, Opus, AMR, ALAC, MP4, AVI, MKV, MOV, WMV, FLV, WEBM",
+      "global_label": "Format global :",
+      "mixed_formats": "Formats mixtes",
+      "select_files": "Sélectionner des fichiers",
+      "convert": "Convertir",
+      "no_file_selected": "Aucun fichier sélectionné !",
+      "convert_error": "Erreur : {{message}}",
+      "current_format": "Format actuel :"
+    },
+    "image": {
+      "title": "Conversions d'images",
+      "subtitle": "Formats d'entrée pris en charge : JPG, PNG, WEBP, BMP, TIFF, GIF, HEIC, AVIF",
+      "global_label": "Format global :",
+      "mixed_formats": "Formats mixtes",
+      "select_files": "Sélectionner des fichiers",
+      "convert": "Convertir",
+      "no_file_selected": "Aucun fichier sélectionné !",
+      "convert_error": "Erreur : {{message}}",
+      "current_format": "Format actuel :"
+    },
+    "archive": {
+      "title": "Conversions d'archives",
+      "subtitle": "Formats d'entrée pris en charge : 7Z, ZIP, TAR, GZ, BZIP2, XZ, RAR",
+      "global_label": "Format global :",
+      "mixed_formats": "Formats mixtes",
+      "select_files": "Sélectionner des fichiers",
+      "convert": "Convertir",
+      "no_file_selected": "Aucun fichier sélectionné !",
+      "convert_error": "Erreur : {{message}}",
+      "current_format": "Format actuel :"
+    },
+    "document": {
+      "title": "Conversions de documents",
+      "subtitle": "Formats d'entrée pris en charge : DOC, DOCX, ODT, XLS, XLSX, PPT, PPTX",
+      "global_label": "Format global :",
+      "mixed_formats": "Formats mixtes",
+      "select_files": "Sélectionner des fichiers",
+      "convert": "Convertir",
+      "no_file_selected": "Aucun fichier sélectionné !",
+      "convert_error": "Erreur : {{message}}",
+      "current_format": "Format actuel :"
+    },
+    "status": {
+      "queued": "En attente",
+      "processing": "En cours",
+      "done": "Terminé"
+    }
+  },
+  "dashboard": {
+    "overall_usage": "Utilisation globale",
+    "converted_files": "Fichiers convertis",
+    "total_size": "Taille totale",
+    "avg_conversion_time": "Temps moyen",
+    "last_converted_files": "Derniers fichiers convertis",
+    "start_new_conversion": "Démarrer une nouvelle conversion",
+    "drag_and_drop_files": "Glissez-déposez des fichiers ici"
+  },
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "media": "Multimédia",
+    "image": "Image",
+    "archive": "Archive",
+    "document": "Document",
+    "notifications": "Notifications",
+    "settings": "Paramètres",
+    "help": "Aide"
+  },
+  "settings": {
+    "general": "Général",
+    "notifications": "Notifications",
+    "output": "Paramètres de sortie",
+    "update": "Mise à jour logicielle",
+    "general-settings": {
+      "theme": "Thème de l'application",
+      "custom-theme": "Thème personnalisé",
+      "custom-css-input": "Vous pouvez coller votre CSS personnalisé ici",
+      "debugging": "Débogage",
+      "reset-setup-modal": {
+        "title": "Voulez-vous vraiment réinitialiser la configuration ?",
+        "description": "Cette action est irréversible.",
+        "confirm-text": "Oui, réinitialiser",
+        "cancel-text": "Annuler"
+      },
+      "language-settings": {
+        "title": "Langue"
+      }
+    },
+    "notification-settings": {
+      "notifications": "Notifications"
+    },
+    "output-settings": {
+      "output": "Paramètres de sortie"
+    },
+    "update-settings": {
+      "update": "Mise à jour logicielle"
+    }
+  },
+  "loading": "Chargement…"
+}

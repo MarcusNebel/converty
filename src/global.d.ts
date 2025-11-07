@@ -44,10 +44,17 @@ interface ElectronAPI {
   };
   on: (channel: string, callback: (event: any, msg: any) => void) => void;
   ipcRenderer: {
-    on: (channel: string, listener: (event: any, ...args: any[]) => void) => void;
+    on: <T = any>(channel: string, listener: (event: Electron.IpcRendererEvent, args: T) => void) => void;
     removeAllListeners: (channel: string) => void;
+    removeListener?: (channel: string) => void;
     send: (channel: string, data?: any) => void;
+    invoke(channel: string, ...args: any[]): Promise<any>;
   };
+  update: {
+    check(): Promise<any>;
+  };
+
+  getFileSize: (path: string) => Promise<number>;
 }
 
 declare global {

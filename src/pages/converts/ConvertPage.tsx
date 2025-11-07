@@ -62,28 +62,35 @@ const ConvertPage: FC<ConvertPageProps> = ({ icon: Icon, type, formats, electron
     setFiles(prev => prev.map(f => ({ ...f, targetFormat: value })));
   };
 
+  type ConvertHandler = {
+    convertFiles: (files: FileConvert[]) => Promise<{ success: boolean; convertedFiles?: FileItem[]; message: string }>;
+    selectFiles: () => Promise<string[]>;
+  };
+
   const handleConvert = async () => {
-    if (!files.length) {
-      return alert(t(`converts.${type}.no_file_selected`));
-    }
+    if (!files.length) return alert(t(`converts.${type}.no_file_selected`));
 
     console.log(`Starte Konvertierung von ${files.length} Datei(en)...`);
     setFiles(prev => prev.map(f => ({ ...f, status: "processing" })));
 
-    const fileConverts = files.map(f => ({
-      path: f.path,
-      targetFormat: f.targetFormat,
-    }));
+    const fileConverts = files.map(f => ({ path: f.path, targetFormat: f.targetFormat }));
 
     // Zeitmessung starten
     const startTime = performance.now();
 
-    const result = await window.electron.converts[type].convertFiles(fileConverts);
+    // Type Guard & Casting
+    const converts = window.electron.converts as Record<string, ConvertHandler>;
+    if (!(type in converts)) {
+      console.error("Ungültiger Convert-Typ:", type);
+      return;
+    }
+
+    const result = await converts[type].convertFiles(fileConverts);
 
     // Zeitmessung beenden
     const endTime = performance.now();
-    let durationSeconds = (endTime - startTime) / 1000;
-    let durationSecondsRounded = durationSeconds.toFixed(2);
+    const durationSeconds = (endTime - startTime) / 1000;
+    const durationSecondsRounded = durationSeconds.toFixed(2);
     console.log(`Konvertierung abgeschlossen in ${durationSecondsRounded} s`);
 
     if (result.success) {
@@ -96,82 +103,51 @@ const ConvertPage: FC<ConvertPageProps> = ({ icon: Icon, type, formats, electron
       const lastFiles = (await window.electron.store.get("lastFiles")) || [];
       const existingAvgTime = (await window.electron.store.get("avgConversionTime")) || "0 s";
 
-      console.log(`Vorherige durchschnittliche Zeit: ${existingAvgTime}`);
-
       const existingAvgTimeNum = parseFloat(existingAvgTime as string) || 0;
       const durationSecondsNum = Number(durationSecondsRounded) || 0;
 
-      let newAvgTime: number;
+      const newAvgTime = existingAvgTimeNum > 0
+        ? (existingAvgTimeNum + durationSecondsNum) / 2
+        : durationSecondsNum;
 
-      if (existingAvgTimeNum > 0) {
-        // Wenn es bereits einen Durchschnitt gibt → Mittelwert bilden
-        newAvgTime = (existingAvgTimeNum + durationSecondsNum) / 2;
-      } else {
-        // Wenn noch kein Durchschnitt vorhanden → neuen Wert übernehmen
-        newAvgTime = durationSecondsNum;
-      }
-
-      console.log(`Neue durchschnittliche Zeit: ${newAvgTime.toFixed(2)} s`);
-
-      // Helfer zum Umrechnen
+      // Helfer
       const parseSize = (sizeStr: string) => {
         const units = { B: 1 / (1024 * 1024), KB: 1 / 1024, MB: 1, GB: 1024 };
         const match = sizeStr.match(/([\d.]+)\s*(B|KB|MB|GB)/i);
         if (!match) return 0;
-        const value = parseFloat(match[1]);
-        const unit = match[2].toUpperCase();
-        return value * (units[unit as keyof typeof units] || 0);
+        return parseFloat(match[1]) * (units[match[2].toUpperCase() as keyof typeof units] || 0);
       };
 
-      const formatSize = (mb: number) => {
-        if (mb >= 1024) return (mb / 1024).toFixed(2) + " GB";
-        return mb.toFixed(2) + " MB";
-      };
+      const formatSize = (mb: number) => mb >= 1024 ? (mb / 1024).toFixed(2) + " GB" : mb.toFixed(2) + " MB";
 
-      // Gesamtgröße in MB
       let totalMb = parseSize(existingSize);
 
       for (const file of successfulFiles) {
-        const path = file.path;
-        if (!path) {
-          console.warn("Datei hat keinen Pfad:", file);
-          continue;
-        }
-
-        const bytes = await window.electron.getFileSize(path);
+        if (!file.path) continue;
+        const bytes = await window.electron.getFileSize(file.path);
         totalMb += bytes / (1024 * 1024);
-        console.log(`${path} = ${(bytes / (1024 * 1024)).toFixed(2)} MB`);
       }
 
       const newTotalCount = existingCount + successfulCount;
       const newTotalSize = formatSize(totalMb);
 
+      // Typ für flatMap angeben
       const updatedLastFiles = [
-        ...successfulFiles.flatMap(f => {
+        ...successfulFiles.flatMap((f: FileItem) => {
           const inputName = f.name || f.path.split("/").pop() || "Unbekannt";
           const inputExt = inputName.split(".").pop() || "";
-          const outputExt = f.targetFormat;
-          const outputName = inputName.replace(new RegExp(`${inputExt}$`, "i"), outputExt);
+          const outputName = inputName.replace(new RegExp(`${inputExt}$`, "i"), f.targetFormat);
 
-          return [
-            {
-              input: inputName,
-              output: outputName,
-              size: f.size ? formatBytes(f.size) : "",
-            },
-          ];
+          return [{ input: inputName, output: outputName, size: f.size ? formatBytes(f.size) : "" }];
         }),
         ...lastFiles,
-      ].slice(0, 6); // Count of Files
+      ].slice(0, 6);
 
       // Store aktualisieren
       await window.electron.store.set("fileCount", newTotalCount);
       await window.electron.store.set("totalSize", newTotalSize);
       await window.electron.store.set("lastFiles", updatedLastFiles);
       await window.electron.store.set("avgConversionTime", newAvgTime);
-
-      console.log(`✅ Erfolgreich ${successfulCount} Datei(en) konvertiert.`);
-      console.log(`📦 Gesamt: ${newTotalCount} Dateien (${newTotalSize})`);
 
       // UI aktualisieren
       setFiles(prev => prev.map(f => ({ ...f, status: "done" })));
@@ -181,6 +157,7 @@ const ConvertPage: FC<ConvertPageProps> = ({ icon: Icon, type, formats, electron
     }
   };
 
+  // Hilfsfunktion zum Formatieren
   function formatBytes(bytes: number) {
     if (bytes === 0) return "0 B";
     const k = 1024;

@@ -41,6 +41,7 @@
       "language_label": "Language:",
       "language_german": "German",
       "language_english": "English",
+      "language_french": "French",
       "libreoffice_title": "LibreOffice Installation",
       "libreoffice_description": "To convert documents, LibreOffice must be installed.",
       "libreoffice_checking": "Checking LibreOffice installation...",
@@ -134,8 +135,39 @@
     "image": "Image",
     "archive": "Archive",
     "document": "Document",
+    "notifications": "Notifications",
     "settings": "Settings",
     "help": "Help"
+  },
+  "settings": {
+    "general": "Genaral",
+    "notifications": "Notifications",
+    "output": "Output Settings",
+    "update": "Software Update",
+    "general-settings": {
+      "theme": "App Theme",
+      "custom-theme": "Custom Theme",
+      "custom-css-input": "Here you can paste youre custom css",
+      "debugging": "Debugging",
+      "reset-setup-modal": {
+        "title": "Do you really want to reset the setup?",
+        "description": "This action cannot be undone.",
+        "confirm-text": "Yes, reset",
+        "cancel-text": "Cancel"
+      },
+      "language-settings": {
+        "title": "Language"
+      }
+    },
+    "notification-settings": {
+      "notifications": "Notifications"
+    },
+    "output-settings": {
+      "output": "Output Settings"
+    },
+    "update-settings": {
+      "update": "Software Update"
+    }
   },
   "loading": "Loading..."
 }

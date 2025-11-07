@@ -1,7 +1,7 @@
 {
   "name": "converty",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.1",
   "author": "Marcus Nebel",
   "description": "Converty – Datei-Konvertierungs-App",
   "main": "main.js",
@@ -76,6 +76,7 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "adm-zip": "^0.5.16",
+    "axios": "^1.13.2",
     "electron-store": "^11.0.2",
     "fluent-ffmpeg": "^2.1.3",
     "fs": "^0.0.1-security",
@@ -87,12 +88,15 @@
     "react-dom": "^19.1.1",
     "react-i18next": "^16.1.0",
     "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.9.4",
-    "sharp": "^0.34.4",
-    "tree": "^0.1.3"
+    "remark-gfm": "^4.0.1",
+    "semver": "^7.7.3",
+    "sharp": "^0.34.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@types/electron": "^1.4.38",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",

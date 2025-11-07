@@ -160,7 +160,7 @@ function getLibreOfficePath() {
 export function registerSetupIPC() {
   ipcMain.handle('setup:isCompleted', () => store.get('setupCompleted', false));
   ipcMain.handle('setup:complete', () => store.set('setupCompleted', true));
-  ipcMain.handle('setup:reset', () => store.delete('setupCompleted'));
+  ipcMain.handle('setup:reset', () => store.clear());
 
   // Neues IPC für Setup-Daten
   ipcMain.handle('setup:saveData', (event, data) => {
@@ -171,8 +171,13 @@ export function registerSetupIPC() {
   });
 
   ipcMain.handle('setup:getData', () => {
-    const data = store.get();
+    const data = store.get('setupData');
     return data ?? {}; // Falls noch nichts gespeichert ist, leeres Objekt
+  });
+
+  ipcMain.handle('setup:getElectronStoreData', () => {
+    const data = store.get();
+    return data ?? {};
   });
 }
 
@@ -239,6 +244,10 @@ export function registerConvertMediaIPC() {
     mkv: { container: "matroska", videoCodec: "libx264", audioCodec: "aac" },
     wmv: { container: "asf", videoCodec: "wmv2", audioCodec: "wmav2" },
     flv: { container: "flv", videoCodec: "flv", audioCodec: "aac" },
+    mpg: { container: "mpeg", videoCodec: "mpeg2video", audioCodec: "mp2" },
+    ts: { container: "mpegts", videoCodec: "libx264", audioCodec: "aac" },
+    gif: { container: "gif", videoCodec: "gif", audioCodec: "" }, // Kein Audio
+    hevc_mp4: { container: "mp4", videoCodec: "libx265", audioCodec: "aac" }
   };
 
   ipcMain.handle("media:convertFiles", async (event, files) => {

@@ -12,32 +12,44 @@
 
 
 
-  /* Hauptfarben */
+  /* ======= Farbpalette Light Mode ======= */
+
+  /* Grundfarben */
   --color-bg: #f0f2f5;
   --color-surface: #ffffff;
   --color-surface-alt: #e8ebf0;
+  --color-surface-hover: #f6f8fa; /* NEU – leichtes Hover-Weiß */
   --color-border: #d2d7de;
 
   /* Textfarben */
   --color-text: #1a1d21;
   --color-text-secondary: #4b4f56;
-  --color-muted: #6c757d;
+  --color-text-muted: #6c757d;
 
   /* Akzentfarben */
   --color-primary: #3a78ff;
   --color-primary-hover: #2d5eea;
   --color-primary-light: #dce7ff;
-  --color-primary-transparent: rgba(52, 116, 255, 0.4);
-  --color-primary-hover-transparent: rgba(38, 92, 230, 0.15);
+  --color-primary-transparent: rgba(58, 120, 255, 0.4);
+  --color-primary-hover-transparent: rgba(58, 120, 255, 0.15);
 
   /* Erfolgs-, Warn- und Fehlerfarben */
   --color-success: #2ecc71;
+  --color-success-light: #d9fbe8; /* NEU */
   --color-warning: #f1c40f;
+  --color-warning-light: #fff6d0; /* NEU */
   --color-error: #e74c3c;
   --color-error-hover: #c0392b;
+  --color-error-light: #ffe1e1; /* NEU */
+
+  /* Spezielle Elemente */
+  --color-badge: #ff4757; /* kräftiger Kontrast für Notification-Badges */
+  --color-badge-hover: #ff6b81;
+  --color-overlay: rgba(0, 0, 0, 0.1); /* Hintergrundüberlagerungen */
+  --color-shadow-soft: rgba(0, 0, 0, 0.06); /* weiche Schatten */
 
   /* Schatten und Effekte */
-  --shadow-elevate: 0 4px 10px rgba(0, 0, 0, 0.08);
+  --shadow-elevate: 0 4px 10px var(--color-shadow-soft);
   --shadow-hover: 0 6px 14px rgba(0, 0, 0, 0.12);
 
   /* Scrollbar */
@@ -46,27 +58,41 @@
 }
 
 [data-theme="dark"] {
-  /* Hauptfarben */
+  /* ======= Farbpalette Dark Mode ======= */
+
+  /* Grundfarben */
   --color-bg: #0f1115;
   --color-surface: #181b21;
   --color-surface-alt: #22262e;
+  --color-surface-hover: #242832; /* NEU */
   --color-border: #2f333b;
 
   /* Textfarben */
   --color-text: #e9ecf1;
   --color-text-secondary: #b0b4bb;
-  --color-muted: #8a8f98;
+  --color-text-muted: #8a8f98;
 
   /* Akzentfarben */
   --color-primary: #3a78ff;
   --color-primary-hover: #2d5eea;
   --color-primary-light: #507eff;
+  --color-primary-transparent: rgba(58, 120, 255, 0.25);
+  --color-primary-hover-transparent: rgba(58, 120, 255, 0.15);
 
   /* Erfolgs-, Warn- und Fehlerfarben */
   --color-success: #44d38c;
+  --color-success-light: #1e2f28; /* NEU */
   --color-warning: #f7c948;
+  --color-warning-light: #2f2810; /* NEU */
   --color-error: #ff5c5c;
   --color-error-hover: #c0392b;
+  --color-error-light: #2b1919; /* NEU */
+
+  /* Spezielle Elemente */
+  --color-badge: #ff4757;
+  --color-badge-hover: #ff6b81;
+  --color-overlay: rgba(0, 0, 0, 0.4);
+  --color-shadow-soft: rgba(0, 0, 0, 0.5);
 
   /* Schatten und Effekte */
   --shadow-elevate: 0 4px 16px rgba(0, 0, 0, 0.6);
