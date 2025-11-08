@@ -55,7 +55,7 @@ jobs:
 
       - name: Build App on macOS
         if: runner.os == 'macOS'
-        run: npx electron-builder --mac
+        run: npx electron-builder --mac --universal
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
