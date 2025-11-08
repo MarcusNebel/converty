@@ -53,13 +53,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build App (Vite + Electron)
-        run: |
-          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            npx electron-builder --mac --${{ matrix.mac_arch }}
-          else
-            npm run build-app
-          fi
+      - name: Build App on macOS
+        if: runner.os == 'macOS'
+        run: npx electron-builder --mac
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Build App on Windows/Linux
+        if: runner.os != 'macOS'
+        run: npm run build-app
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
 
