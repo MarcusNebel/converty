@@ -55,14 +55,14 @@ jobs:
 
       - name: Build App on macOS (arm64)
         if: runner.os == 'macOS'
-        run: npm run build-app -- --mac
+        run: npm run build-app -- --mac --arm64 --out=dist/mac-arm64
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Build App on macOS (x64)
         if: runner.os == 'macOS'
-        run: npm run build-app -- --mac --x64
+        run: npm run build-app -- --mac --x64   --out=dist/mac-x64
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
@@ -82,8 +82,11 @@ jobs:
             dist/*.AppImage
             dist/*.deb
             dist/*.rpm
-            dist/*.dmg
-            dist/*.pkg
-            dist/*.zip
+            dist/mac-arm64/*.dmg
+            dist/mac-arm64/*.pkg
+            dist/mac-arm64/*.zip
+            dist/mac-x64/*.dmg
+            dist/mac-x64/*.pkg
+            dist/mac-x64/*.zip
           token: ${{ secrets.GH_PAT }}
           
