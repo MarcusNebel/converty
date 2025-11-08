@@ -92,15 +92,7 @@ function buildDebugMenu() {
       label: 'Window',
       submenu: [
         { role: 'minimize' },
-        { role: 'zoom' },
-        ...(process.platform === 'darwin'
-          ? [
-              { type: 'separator' },
-              { role: 'front' },
-              { type: 'separator' },
-              { role: 'window' }
-            ]
-          : [])
+        { role: 'zoom' }
       ]
     },
 
