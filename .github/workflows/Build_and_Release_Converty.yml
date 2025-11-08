@@ -1,4 +1,4 @@
-name: Build and Release Converty
+name: Build and Release Converty Setup
 
 on:
   push:
