@@ -44,7 +44,6 @@
         "pkg",
         "zip"
       ],
-      "arch": ["x64", "arm64"],
       "category": "public.app-category.utilities",
       "artifactName": "Converty-${version}-mac-${arch}.${ext}",
       "extendInfo": {
