@@ -40,20 +40,10 @@
     },
     "mac": {
       "target": [
-        {
-          "target": "dmg",
-          "arch": ["universal"]
-        },
-        {
-          "target": "pkg",
-          "arch": ["universal"]
-        },
-        {
-          "target": "zip",
-          "arch": ["universal"]
-        }
+        "dmg",
+        "pkg",
+        "zip"
       ],
-      "asar": false,
       "category": "public.app-category.utilities",
       "artifactName": "Converty-${version}-mac-${arch}.${ext}",
       "extendInfo": {

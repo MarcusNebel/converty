@@ -53,9 +53,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build App on macOS
+      - name: Build App on macOS (Universal)
         if: runner.os == 'macOS'
-        run: npx electron-builder --mac --universal
+        run: npx electron-builder --mac
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Build App on macOS (x64)
+        if: runner.os == 'macOS'
+        run: npx electron-builder --mac --x64
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
