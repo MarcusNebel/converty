@@ -149,6 +149,7 @@ export const AppSettingsStep = ({ setupData, updateSetupData, applyTheme }: Setu
           options={[
             { value: "en", label: t("setup.steps.language_english") },
             { value: "de", label: t("setup.steps.language_german") },
+            { value: "fr", label: t("setup.steps.language_french") },
           ]}
           value={setupData.language || i18n.language}
           onChange={(lang) => {

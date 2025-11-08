@@ -5,9 +5,12 @@ import semver from "semver";
 import fs from "fs";
 import path from "path";
 import os from "os";
+import Store from "electron-store"
+
+const store = new Store();
 
 const REPO_OWNER = "MarcusNebel";
-const REPO_NAME = "Converty";
+const REPO_NAME = "converty";
 const GITHUB_API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
 
 function getLocalVersion() {
@@ -46,14 +49,17 @@ function getPlatformAsset(assets) {
 }
 
 const deleteSetupFile = async (filePath) => {
-  while (true) {
+  let retries = 10;
+  while (retries > 0) {
     try {
       fs.unlinkSync(filePath);
       console.log("Setup-Datei gelöscht.");
       return;
     } catch (err) {
       if (err.code === "EBUSY" || err.code === "EPERM") {
+        // Datei noch in Benutzung, 500ms warten
         await new Promise(res => setTimeout(res, 500));
+        retries--;
       } else {
         console.error("Fehler beim Löschen der Setup-Datei:", err);
         return;
@@ -70,11 +76,11 @@ const openAndDelete = async (filePath) => {
     child.on("error", (err) => reject(err));
 
     child.on("close", async () => {
-      // Datei erst löschen, wenn der Installer fertig ist
       try {
-        await deleteSetupFile(filePath);
+        fs.unlinkSync(filePath); // Löschen
         resolve();
       } catch (err) {
+        console.error("Fehler beim Löschen:", err);
         reject(err);
       }
     });
@@ -115,38 +121,41 @@ export function registerUpdateIPC() {
     if (!url) return { success: false, error: "Kein Download-Link vorhanden." };
 
     try {
-        const tempDir = os.tmpdir();
-        const fileName = path.basename(url);
-        const filePath = path.join(tempDir, fileName);
+      const tempDir = os.tmpdir();
+      const fileName = path.basename(url);
+      const filePath = path.join(tempDir, fileName);
 
-        const response = await axios.get(url, { responseType: "stream" });
-        const totalSize = parseInt(response.headers['content-length'], 10);
-        let downloaded = 0;
+      // Setup-Datei zum Temp-File-Array hinzufügen
+      const tempFiles = store.get("temp-dir-files", []);
+      tempFiles.push(filePath);
+      store.set("temp-dir-files", tempFiles);
 
-        const writer = fs.createWriteStream(filePath);
-        response.data.on('data', (chunk) => {
+      const response = await axios.get(url, { responseType: "stream" });
+      const totalSize = parseInt(response.headers['content-length'], 10);
+      let downloaded = 0;
+
+      const writer = fs.createWriteStream(filePath);
+      response.data.on('data', (chunk) => {
         downloaded += chunk.length;
         event.sender.send("update:download-progress", { downloaded, total: totalSize });
-        });
-        response.data.pipe(writer);
+      });
+      response.data.pipe(writer);
 
-        await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject) => {
         writer.on("finish", resolve);
         writer.on("error", reject);
-        });
+      });
 
-        event.sender.send("update:status", "Update wird geöffnet…");
+      event.sender.send("update:status", "Update wird geöffnet…");
 
-        shell.openPath(filePath);
+      // Installer starten **nicht awaiten**
+      shell.openPath(filePath);
+      app.quit();
 
-        setTimeout(async () => {
-        await deleteSetupFile(filePath);
-        }, 10000);
-
-        return { success: true };
+      return { success: true };
     } catch (err) {
-        console.error("Fehler beim Herunterladen/Öffnen des Updates:", err);
-        return { success: false, error: err.message };
+      console.error("Fehler beim Herunterladen/Öffnen des Updates:", err);
+      return { success: false, error: err.message };
     }
   });
 }

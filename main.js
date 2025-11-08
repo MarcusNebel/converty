@@ -14,9 +14,12 @@ import {
   registerLibreOfficeIPC
 } from './main/ipcHandlers.js';
 import { registerUpdateIPC } from "./main/updateHandler.js";
+import Store from "electron-store";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const store = new Store();
 
 const preloadPath = app.isPackaged
   ? path.join(process.resourcesPath, "app.asar.unpacked", "preload.js")
@@ -43,6 +46,25 @@ function createWindow() {
   }
 }
 
+export function clearTempFiles() {
+  const tempFiles = store.get("temp-dir-files", []);
+  const remaining = [];
+
+  for (const file of tempFiles) {
+    try {
+      if (fs.existsSync(file)) {
+        fs.unlinkSync(file);
+        console.log("Gelöscht:", file);
+      }
+    } catch (err) {
+      console.warn("Konnte Datei nicht löschen:", file, err.message);
+      remaining.push(file);
+    }
+  }
+
+  store.set("temp-dir-files", remaining);
+}
+
 ipcMain.handle("select-folder", async () => {
   const result = await dialog.showOpenDialog({
     properties: ["openDirectory"]
@@ -64,6 +86,7 @@ ipcMain.handle("get-file-size", (event, path) => {
 });
 
 app.whenReady().then(() => {
+  clearTempFiles();
   registerSetupIPC();
   registerThemeIPC();
   createWindow();

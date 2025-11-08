@@ -23,7 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ active, onSelect }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [closing, setClosing] = useState(false);
   const notificationRef = useRef<HTMLDivElement | null>(null);
-  const [notifications, setNotifications] = useState<string[]>([
+  const [notifications, {/*setNotifications*/}] = useState<string[]>([
     "Datei erfolgreich konvertiert",
     "Update verfügbar",
     "3 neue Dateien gefunden",

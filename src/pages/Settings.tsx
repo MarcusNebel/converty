@@ -21,12 +21,14 @@ export default function Home() {
   const [downloadedText, setDownloadedText] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
-  const [statusText, setStatusText] = useState("");
 
   useEffect(() => {
-    const listener = (
-      { downloaded, total }: { downloaded: number; total: number }
-    ) => {
+    interface DownloadProgress {
+      downloaded: number;
+      total: number;
+    }
+
+    const listener = (_event: any, { downloaded, total }: DownloadProgress) => {
       const percent = Math.round((downloaded / total) * 100);
       setProgress(percent);
       setDownloadedText(`${(downloaded / 1024 / 1024).toFixed(2)} MB / ${(total / 1024 / 1024).toFixed(2)} MB`);
@@ -35,22 +37,16 @@ export default function Home() {
     window.electron.ipcRenderer.on("update:download-progress", listener);
 
     return () => {
-      window.electron.ipcRenderer.removeAllListeners("update:download-progress");
+      // removeListener in global.d.ts korrekt typisieren
+      if (window.electron.ipcRenderer.removeListener) {
+        window.electron.ipcRenderer.removeListener("update:download-progress", listener);
+      } else {
+        window.electron.ipcRenderer.removeAllListeners("update:download-progress");
+      }
     };
   }, []);
 
-  useEffect(() => {
-    const statusListener = (
-      message: string
-    ) => {
-      setStatusText(message);
-    };
-    window.electron.ipcRenderer.on("update:status", statusListener);
-    return () => {
-      window.electron.ipcRenderer.removeAllListeners("update:status");
-    };
-  }, []);
-
+  
   const startDownload = async () => {
     const url = updateData?.downloadUrl;
     if (!url) return;
@@ -202,7 +198,7 @@ export default function Home() {
                 options={[
                   { value: "en", label: t("setup.steps.language_english") },
                   { value: "de", label: t("setup.steps.language_german") },
-                  { value: "fr", label: t("setup.steps.language_french") }
+                  { value: "fr", label: t("setup.steps.language_french") },
                 ]}
                 value={language}
                 onChange={handleLanguageChange}
@@ -263,52 +259,75 @@ export default function Home() {
                 <>
                   {updateData.updateAvailable ? (
                     <>
+                      {/* Versionsinfos */}
                       <div className="version-info">
                         <div>
                           <span>Neueste Version: {updateData.remoteVersion}</span>
                         </div>
                       </div>
 
+                      {/* Release-Titel */}
                       <h3>{updateData.title}</h3>
 
+                      {/* Release Notes */}
                       <div className="release-notes">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {updateData.notes}
                         </ReactMarkdown>
                       </div>
 
-                      {/* Hier die States anzeigen */}
-                      {isDownloading && (
-                        <p>
-                          Fortschritt: {progress}% ({downloadedText})
-                        </p>
-                      )}
-                      {downloadComplete && <p>Download abgeschlossen!</p>}
-                      {statusText && <p>Status: {statusText}</p>}
-
                       <div className="update-check-download-btns">
+                        {/* Update Button */}
                         <button
-                          className="btn-settings-no-margin"
+                          className="btn-settings"
                           onClick={startDownload}
                           disabled={isDownloading || !updateData?.downloadUrl}
                         >
                           {isDownloading ? "Herunterladen..." : "Update herunterladen"}
                         </button>
 
+                        {/* Prüfen-Button */}
                         <button
-                          className="btn-settings-no-margin"
+                          className="btn-settings"
                           onClick={checkForUpdates}
                           disabled={checking}
                         >
                           {checking ? "Wird geprüft..." : "Erneut prüfen"}
                         </button>
                       </div>
+
+                      {isDownloading || downloadComplete ? (
+                        <div style={{ marginTop: "12px" }}>
+                          <div
+                            style={{
+                              background: "var(--color-bg-alt)",
+                              borderRadius: "8px",
+                              height: "16px",
+                              width: "100%",
+                              overflow: "hidden",
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: downloadComplete ? "100%" : `${progress}%`,
+                                height: "100%",
+                                background: "var(--color-primary)",
+                                transition: "width 0.2s ease",
+                              }}
+                            />
+                          </div>
+                          <div style={{ fontSize: "0.85rem", marginTop: "4px", color: "var(--color-text)" }}>
+                            {downloadComplete ? "Update-Datei wird geöffnet…" : downloadedText}
+                          </div>
+                        </div>
+                      ) : null}
                     </>
                   ) : (
                     <>
                       <p>Converty ist bereits auf dem neuesten Stand. <FaCheck /></p>
 
                       <div className="update-check-download-btns">
+                        {/* Prüfen-Button auch hier anzeigen */}
                         <button
                           className="btn-settings-no-margin"
                           onClick={checkForUpdates}

@@ -46,7 +46,7 @@ interface ElectronAPI {
   ipcRenderer: {
     on: <T = any>(channel: string, listener: (event: Electron.IpcRendererEvent, args: T) => void) => void;
     removeAllListeners: (channel: string) => void;
-    removeListener?: (channel: string) => void;
+    removeListener?: (channel: string, listener: (event: Electron.IpcRendererEvent, args: any) => void) => void;
     send: (channel: string, data?: any) => void;
     invoke(channel: string, ...args: any[]): Promise<any>;
   };
