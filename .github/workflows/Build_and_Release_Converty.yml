@@ -53,16 +53,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build App on macOS (Universal)
+      - name: Build App on macOS (arm64)
         if: runner.os == 'macOS'
-        run: npm run build-app --mac
+        run: npm run build-app -- --mac
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Build App on macOS (x64)
         if: runner.os == 'macOS'
-        run: npm run clean && npm run build && electron-builder --mac --x64
+        run: npm run build-app -- --mac --x64
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
@@ -86,3 +86,4 @@ jobs:
             dist/*.pkg
             dist/*.zip
           token: ${{ secrets.GH_PAT }}
+          
