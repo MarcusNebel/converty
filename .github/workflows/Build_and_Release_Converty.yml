@@ -56,12 +56,12 @@ jobs:
 
       - name: Build App (Vite + Electron)
         run: npm run build-app
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Upload built artifacts to release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.get-version.outputs.version }}
           files: dist/**
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-
+          token: ${{ secrets.GH_PAT }}
