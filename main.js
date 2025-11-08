@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, Menu } from "electron";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
@@ -33,17 +33,92 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    minWidth: 1200,
+    minHeight: 800,
     webPreferences: {
       preload: preloadPath,
-      contextIsolation: true, // Pflicht für contextBridge
-    nodeIntegration: false,  // Sicherheitsmaßnahme
+      contextIsolation: true,
+      nodeIntegration: false,
     },
   });
+
   if (app.isPackaged) {
-    win.loadFile(path.join(app.getAppPath(), "dist", "index.html"));
+    win.loadFile(path.join(app.getAppPath(), 'dist', 'index.html'));
   } else {
-    win.loadURL("http://localhost:5678"); // Vite dev server
+    win.loadURL('http://localhost:5678'); // Vite dev server
   }
+}
+
+function buildDebugMenu() {
+  const template = [
+    {
+      label: 'File',
+      submenu: [
+        { role: 'quit' }
+      ]
+    },
+
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'delete' },
+        { type: 'separator' },
+        { role: 'selectAll' }
+      ]
+    },
+
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forcereload' },
+        { role: 'toggledevtools' },
+        { type: 'separator' },
+        { role: 'resetzoom' },
+        { role: 'zoomin' },
+        { role: 'zoomout' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
+
+    {
+      label: 'Window',
+      submenu: [
+        { role: 'minimize' },
+        { role: 'zoom' },
+        ...(process.platform === 'darwin'
+          ? [
+              { type: 'separator' },
+              { role: 'front' },
+              { type: 'separator' },
+              { role: 'window' }
+            ]
+          : [])
+      ]
+    },
+
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Learn More',
+          click: async () => {
+            const { shell } = require('electron');
+            await shell.openExternal('https://electronjs.org');
+          }
+        }
+      ]
+    }
+  ];
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
 export function clearTempFiles() {
@@ -86,6 +161,12 @@ ipcMain.handle("get-file-size", (event, path) => {
 });
 
 app.whenReady().then(() => {
+  if (!app.isPackaged) {
+    buildDebugMenu();
+  } else {
+    Menu.setApplicationMenu(null);
+  }
+
   clearTempFiles();
   registerSetupIPC();
   registerThemeIPC();

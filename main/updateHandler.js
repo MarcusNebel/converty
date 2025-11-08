@@ -38,11 +38,11 @@ function getPlatformAsset(assets) {
   let asset = null;
 
   if (platform === "win32") {
-    asset = assets.find(a => a.name.endsWith(".exe") || a.name.endsWith(".msi"));
+    asset = assets.find(a => a.name.endsWith(".exe"));
   } else if (platform === "darwin") {
-    asset = assets.find(a => a.name.endsWith(".dmg") || a.name.endsWith(".zip"));
+    asset = assets.find(a => a.name.endsWith(".dmg") || a.name.endsWith(".pkg") || a.name.endsWith(".zip"));
   } else if (platform === "linux") {
-    asset = assets.find(a => a.name.endsWith(".AppImage") || a.name.endsWith(".deb") || a.name.endsWith(".tar.gz"));
+    asset = assets.find(a => a.name.endsWith(".AppImage") || a.name.endsWith(".deb") || a.name.endsWith(".rpm"));
   }
 
   return asset ? asset.browser_download_url : null;

@@ -28,7 +28,8 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "artifactName": "Converty-${version}-windows-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
@@ -43,8 +44,9 @@
         "pkg",
         "zip"
       ],
+      "arch": ["x64", "arm64"],
       "category": "public.app-category.utilities",
-      "artifactName": "Converty-${version}-${arch}.${ext}",
+      "artifactName": "Converty-${version}-mac-${arch}.${ext}",
       "extendInfo": {
         "NSMicrophoneUsageDescription": "Converty benötigt Zugriff auf Audio zur Dateikonvertierung.",
         "NSCameraUsageDescription": "Converty benötigt Zugriff auf Kamera nur bei bestimmten Formaten.",
@@ -61,7 +63,7 @@
       "maintainer": "Marcus Nebel marcusnebel09@gmail.com",
       "synopsis": "Dateikonvertierung leicht gemacht",
       "description": "Converty – eine moderne, plattformübergreifende App zum Konvertieren von Dateien aller Art.",
-      "artifactName": "Converty-${version}-${arch}.${ext}"
+      "artifactName": "Converty-${version}-linux-${arch}.${ext}"
     }
   },
   "scripts": {
