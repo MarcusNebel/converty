@@ -53,16 +53,26 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build App on macOS (arm64)
+      - name: Build & Upload macOS (arm64)
         if: runner.os == 'macOS'
         run: |
           npm run build-app -- --mac --arm64
           mkdir -p dist/mac-arm64
           mv dist/*-arm64.* dist/mac-arm64/
-          ls dist/mac-arm64
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Upload macOS (arm64) artifacts
+        if: runner.os == 'macOS'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.get-version.outputs.version }}
+          files: |
+            dist/mac-arm64/*.dmg
+            dist/mac-arm64/*.pkg
+            dist/mac-arm64/*.zip
+          token: ${{ secrets.GH_PAT }}
 
       - name: Build App on macOS (x64)
         if: runner.os == 'macOS'
