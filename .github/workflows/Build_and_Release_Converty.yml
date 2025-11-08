@@ -3,7 +3,7 @@ name: Build and Release Converty
 on:
   push:
     branches:
-      - build
+      - main
 
 jobs:
   get-version:
