@@ -71,7 +71,7 @@
     "preview": "vite preview",
     "electron": "electron --no-sandbox .",
     "clean": "rimraf dist",
-    "build-app": "npm run clean && npm run build && electron-builder $*"
+    "build-app": "npm run clean && npm run build && electron-builder"
     "build": "tsc -b && vite build"
   },
   "dependencies": {
