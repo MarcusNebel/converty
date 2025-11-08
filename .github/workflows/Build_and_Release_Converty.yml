@@ -63,5 +63,5 @@ jobs:
           tag_name: ${{ needs.get-version.outputs.version }}
           files: dist/**
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
 
