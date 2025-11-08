@@ -53,6 +53,7 @@
           "arch": ["universal"]
         }
       ],
+      "asar": false,
       "category": "public.app-category.utilities",
       "artifactName": "Converty-${version}-mac-${arch}.${ext}",
       "extendInfo": {
