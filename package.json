@@ -11,6 +11,7 @@
     "productName": "Converty",
     "icon": "public/icon.png",
     "asarUnpack": [
+      "preload.js",
       "**/node_modules/@ffmpeg-installer/**",
       "**/node_modules/adm-zip/**",
       "bin/**"

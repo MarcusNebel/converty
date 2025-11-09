@@ -63,28 +63,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
 
-      - name: Upload macOS (arm64) artifacts
-        if: runner.os == 'macOS'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.get-version.outputs.version }}
-          files: |
-            dist/mac-arm64/*.dmg
-            dist/mac-arm64/*.pkg
-            dist/mac-arm64/*.zip
-          token: ${{ secrets.GH_PAT }}
-
-      - name: Build App on macOS (x64)
-        if: runner.os == 'macOS'
-        run: |
-          npm run build-app -- --mac --x64
-          mkdir -p dist/mac-x64
-          mv dist/*-x64.* dist/mac-x64/
-          ls dist/mac-x64
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-
       - name: Build App on Windows/Linux
         if: runner.os != 'macOS'
         run: npm run build-app
@@ -103,8 +81,5 @@ jobs:
             dist/mac-arm64/*.dmg
             dist/mac-arm64/*.pkg
             dist/mac-arm64/*.zip
-            dist/mac-x64/*.dmg
-            dist/mac-x64/*.pkg
-            dist/mac-x64/*.zip
           token: ${{ secrets.GH_PAT }}
           
