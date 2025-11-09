@@ -22,7 +22,7 @@ const __dirname = path.dirname(__filename);
 const store = new Store();
 
 const preloadPath = app.isPackaged
-  ? path.join(process.resourcesPath, "app.asar.unpacked", "preload.js")
+  ? path.join(process.resourcesPath, "app.asar", "preload.js")
   : path.join(__dirname, "preload.js");
 
 if (!fs.existsSync(preloadPath))
