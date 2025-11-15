@@ -60,7 +60,6 @@ interface ElectronAPI {
 declare global {
   interface Window {
     electron: ElectronAPI;
-    notificationFn?: (note: NotificationItem) => void;
   }
 }
 

@@ -199,16 +199,3 @@
     align-items: center;
     gap: 12px;
 }
-
-.custom-css-input {
-  border: none;
-  border-radius: 12px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  font-size: 1rem;
-  width: 100%;
-  background: var(--color-surface);
-  color: var(--color-text);
-  box-sizing: border-box;
-  transition: all 0.2s ease;
-}

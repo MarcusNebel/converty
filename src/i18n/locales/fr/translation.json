@@ -136,7 +136,6 @@
     "archive": "Archive",
     "document": "Document",
     "notifications": "Notifications",
-    "clear-notifications": "Nettoyer",
     "settings": "Paramètres",
     "help": "Aide"
   },
@@ -169,18 +168,6 @@
     "update-settings": {
       "update": "Mise à jour logicielle"
     }
-  },
-  "notifications": {
-    "success": {
-      "part-one": "Conversion réussie : ",
-      "part-two": " fichier(s) en ",
-      "part-three": "s"
-    },
-    "error": {
-      "part-one": "Conversion échouée : "
-    },
-    "update": "Mise à jour du logiciel : ",
-    "update-error": "Erreur de mise à jour du logiciel : "
   },
   "loading": "Chargement…"
 }

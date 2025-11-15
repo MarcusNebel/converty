@@ -21,14 +21,6 @@ export default function Home() {
   const [downloadedText, setDownloadedText] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
-  const [customCss, setCustomCss] = useState("");
-
-  useEffect(() => {
-    (async () => {
-      const css = await window.electron.store.get("customCSS");
-      if (css) setCustomCss(css);
-    })();
-  }, []);
 
   useEffect(() => {
     interface DownloadProgress {
@@ -82,21 +74,8 @@ export default function Home() {
   };
 
   useEffect(() => {
+    // Beim Laden direkt aktuelle Version anzeigen
     checkForUpdates();
-  }, []);
-
-  useEffect(() => {
-    const loadThemeAndLanguage = async () => {
-      const setupData = await window.electron.setup.getSetupData();
-      const savedTheme = setupData?.theme || "system";
-      const savedLanguage = setupData?.language || i18n.language || "en";
-
-      setTheme(savedTheme);
-      setLanguage(savedLanguage);
-      applyTheme(savedTheme);
-      i18n.changeLanguage(savedLanguage);
-    };
-    loadThemeAndLanguage();
   }, []);
 
   const confirmReset = async () => {
@@ -112,6 +91,20 @@ export default function Home() {
       document.documentElement.setAttribute("data-theme", selectedTheme);
     }
   };
+
+  useEffect(() => {
+    const loadThemeAndLanguage = async () => {
+      const setupData = await window.electron.setup.getSetupData();
+      const savedTheme = setupData?.theme || "system";
+      const savedLanguage = setupData?.language || i18n.language || "en";
+
+      setTheme(savedTheme);
+      setLanguage(savedLanguage);
+      applyTheme(savedTheme);
+      i18n.changeLanguage(savedLanguage);
+    };
+    loadThemeAndLanguage();
+  }, []);
 
   const handleThemeChange = async (newTheme: string) => {
     setTheme(newTheme);
@@ -153,27 +146,6 @@ export default function Home() {
     const notificationBody = "This is a test notification from the renderer of the Electron app Converty.";
 
     new window.Notification(notificationTitle, { body: notificationBody });
-  };
-
-  const saveCss = async () => {
-    await window.electron.store.set("customCSS", customCss);
-
-    let tag = document.getElementById("custom-css-style") as HTMLStyleElement;
-    if (!tag) {
-      tag = document.createElement("style");
-      tag.id = "custom-css-style";
-      document.head.appendChild(tag);
-    }
-
-    tag.textContent = customCss;
-  };
-
-  const clearCss = async () => {
-    setCustomCss("");
-    await window.electron.store.set("customCSS", "");
-
-    const tag = document.getElementById("custom-css-style");
-    if (tag) tag.textContent = "";
   };
 
   return (
@@ -219,22 +191,6 @@ export default function Home() {
               onChange={handleThemeChange}
               placeholder={t("setup.steps.theme_label")}
             />
-
-            <div className="custom-css-settings">
-              <h2 className="h2-settings">{t("settings.general-settings.custom-theme")}</h2>
-
-              <input
-                className="custom-css-input"
-                placeholder={t("settings.general-settings.custom-css-input")}
-                value={customCss}
-                onChange={e => setCustomCss(e.target.value)}
-              />
-
-              <div className="clear-and-save-btns">
-                <button className="btn-settings" onClick={saveCss}>Save</button>
-                <button className="btn-warning" onClick={clearCss}>Clear</button>
-              </div>
-            </div>
 
             <div className="language-settings">
               <h2 className="h2-settings">{t("settings.general-settings.language-settings.title")}</h2>

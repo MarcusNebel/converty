@@ -106,27 +106,13 @@
   border-bottom-left-radius: 4px;
 }
 
-.notification-panel-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px solid var(--color-border);
-  margin-bottom: 15px;
-}
-
 .notification-panel h3 {
+  margin: 0 0 10px 0;
   font-size: 17px;
   font-weight: bold;
   color: var(--color-text);
-}
-
-.clear-notifications-btn {
-  background-color: transparent;
-  color: var(--color-primary);
-  font-weight: bold;
-  border: none;
-  font-size: 17px;
-  cursor: pointer;
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 6px;
 }
 
 .notification-panel ul {

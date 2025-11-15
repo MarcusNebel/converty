@@ -86,7 +86,7 @@ h2 {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
   box-sizing: border-box;
 }
@@ -101,18 +101,9 @@ h2 {
   font-size: 14px;
   color: var(--color-text);
   word-break: break-all;
-  display: flex;
-  justify-content: left;
-  align-items: center;
 }
 
 .file-size {
   font-size: 12px;
   color: var(--color-text-secondary);
-}
-
-.file-type-icons-dashboard {
-  width: 22px;
-  height: 22px;
-  margin-right: 12px;
 }
