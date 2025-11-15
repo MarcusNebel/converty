@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaFileAlt, FaHdd, FaClock, FaArrowRight } from "react-icons/fa";
 import "../styles/Dashboard.css";
 import { useTranslation } from "react-i18next";
+import { AudioIcon, DocumentIcon, ImageIcon, VideoIcon, ZipIcon, EmptyIcon } from "../file-type-icons/index";
 
 interface FileItem {
   input: string;
@@ -51,6 +52,18 @@ const Dashboard: React.FC = () => {
     { label: t("dashboard.avg_conversion_time"), value: avgConversionTime + " s", icon: <FaClock /> },
   ];
 
+  const getFileIcon = (filename: string) => {
+    const ext = filename.split(".").pop()?.toLowerCase() || "";
+
+    if (["mp3", "wav", "aac", "flac", "ogg", "aiff", "ac3", "opus", "amr", "alac"].includes(ext)) return AudioIcon;
+    if (["pdf", "odt", "rtf", "txt", "html", "xlsx", "csv", "doc", "docx", "xls", "ppt", "pptx"].includes(ext)) return DocumentIcon
+    if (["jpg", "jpeg", "png", "webp", "bmp", "tiff", "gif", "heif", "heic", "avif", "gif", "svg"].includes(ext)) return ImageIcon;
+    if (["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm", "mpg", "ts", "gif", "hevc_mp4"].includes(ext)) return VideoIcon;
+    if (["7z", "bz2", "gz", "tar", "xz", "zip", "rar", "wim", "cab", "arj", "chm", "cpio", "iso", "vhd", "vhdx", "swm", "z", "rar"].includes(ext)) return ZipIcon;
+
+    return EmptyIcon;
+  };
+
   return (
     <div className="dashboard-container">
       <h2>{t("dashboard.overall_usage")}</h2>
@@ -68,16 +81,22 @@ const Dashboard: React.FC = () => {
 
       <h2>{t("dashboard.last_converted_files")}</h2>
       <div className="files-grid">
-        {lastFiles.map((file, idx) => (
+        {lastFiles.map((file, idx) => {
+          const IconInput = getFileIcon(file.input)
+          const IconOutput = getFileIcon(file.output)
+        
+        return (
           <div key={idx} className="file-card">
             <div className="file-name">
+              <IconInput className="file-type-icons-dashboard" />
               <span>{file.input}</span>
               <FaArrowRight className="file-arrow-right" />
+              <IconOutput className="file-type-icons-dashboard" />
               <span>{file.output}</span>
             </div>
             <span className="file-size">{file.size}</span>
           </div>
-        ))}
+        )})}
       </div>
     </div>
   );

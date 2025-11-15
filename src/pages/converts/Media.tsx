@@ -1,7 +1,9 @@
 import { FaVideo } from "react-icons/fa";
 import ConvertPage from "./ConvertPage";
+import type { NotificationItem } from "../../components/Sidebar";
 
 const formats = [
+  /* Audio */
   { value: "mp3", label: "MP3 (.mp3)" },
   { value: "wav", label: "WAV (.wav)" },
   { value: "aac", label: "AAC (.aac, .m4a)" },
@@ -12,6 +14,7 @@ const formats = [
   { value: "opus", label: "Opus (.opus)" },
   { value: "amr", label: "AMR (.amr)" },
   { value: "alac", label: "ALAC (.alac)" },
+  /* Video */
   { value: "mp4", label: "MP4 (.mp4)" },
   { value: "avi", label: "AVI (.avi)" },
   { value: "mkv", label: "MKV (.mkv)" },
@@ -25,12 +28,20 @@ const formats = [
   { value: "hevc_mp4", label: "HEVC_MP4 (.hevc_mp4)" },
 ];
 
-const Media = () => (
+interface MediaProps {
+  isConverting: boolean;
+  setIsConverting: React.Dispatch<React.SetStateAction<boolean>>;
+  addNotification?: (note: NotificationItem) => void;
+}
+
+const Media: React.FC<MediaProps> = ({ isConverting, setIsConverting }) => (
   <ConvertPage
     icon={FaVideo}
     type="media"
     formats={formats}
     electronHandler={window.electron.converts.media}
+    isConverting={isConverting}
+    setIsConverting={setIsConverting}
   />
 );
 

@@ -46,16 +46,26 @@
 /* Dropdown-Liste */
 .custom-select-list {
   position: absolute;
-  top: calc(100% + 6px);
   left: 0;
   width: 100%;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 12px;
   box-shadow: var(--shadow-elevate);
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: calc(5 * 42px); /* Maximal 5 Elemente sichtbar */
   z-index: 50;
   animation: dropdownFade 0.15s ease-out;
+}
+
+.custom-select-list.down {
+  top: calc(100% + 6px);
+  bottom: auto;
+}
+
+.custom-select-list.up {
+  bottom: calc(100% + 6px);
+  top: auto;
 }
 
 @keyframes dropdownFade {
