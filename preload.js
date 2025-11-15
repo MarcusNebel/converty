@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('electron', {
 
   app: {
     getLocale: () => ipcRenderer.invoke("app:getLocale"),
+    getVersion: () => ipcRenderer.invoke("app:getVersion")
   },
 
   store: {

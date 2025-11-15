@@ -92,61 +92,48 @@ function AppContent() {
         const result = await window.electron.update.check();
         if (result.error) return;
 
-        if (result.downloadUrl) {
-          const updateNotification: NotificationItem = {
-            key: "notifications.update",
-            params: {
-              version: result.remoteVersion,
-              url: result.downloadUrl,
-            },
-          };
+        const localVersion = (await window.electron.app.getVersion()).trim();
+        const remoteVersion = (result.remoteVersion || "").trim();
 
-          console.log("UPDATE CHECK RESULT:", result);
+        console.log("Local:", localVersion);
+        console.log("Remote:", remoteVersion);
 
-          // Panel-Benachrichtigung
-          if (window.notificationFn) addNotification?.(updateNotification);
+        // Kein Update
+        if (!remoteVersion || localVersion === remoteVersion) return;
+        if (!result.downloadUrl) return;
 
-          // Desktop-Benachrichtigung
-          const body = `${t("notifications.update")} ${result.remoteVersion}`;
-          window.electron.ipcRenderer.send("show-notification", {
-            title: "Converty Update",
-            body,
-          });
-
-          // In den Store schreiben, nur wenn Version noch nicht existiert
-          const oldNotifications: NotificationItem[] = (await window.electron.store.get("notifications")) || [];
-          const alreadyExists = oldNotifications.some(
-            (n) => n.key === "notifications.update" && n.params?.version === result.remoteVersion
-          );
-
-          if (!alreadyExists) {
-            const newNotifications = [updateNotification, ...oldNotifications];
-            await window.electron.store.set("notifications", newNotifications);
-
-            // Sound abspielen
-            const updateSound = new Audio("sounds/new-notification.wav");
-            updateSound.play().catch(e => console.log("Sound konnte nicht abgespielt werden:", e));
-          }
-        }
-      } catch (err: any) {
-        console.error("Update-Check fehlgeschlagen:", err.message);
-
-        // Fehler als Notification
-        const errorNotification: NotificationItem = {
-          key: "notifications.update-error",
-          params: { message: err.message },
+        const updateNotification: NotificationItem = {
+          key: "notifications.update",
+          params: {
+            version: remoteVersion,
+            url: result.downloadUrl,
+          },
         };
 
-        if (window.notificationFn) addNotification?.(errorNotification);
-        const body = `Update-Check fehlgeschlagen: ${err.message}`;
-        window.electron.ipcRenderer.send("show-notification", { title: "Converty Update", body });
+        if (window.notificationFn) addNotification?.(updateNotification);
 
-        const oldNotifications: NotificationItem[] = (await window.electron.store.get("notifications")) || [];
-        const newNotifications = [errorNotification, ...oldNotifications];
-        await window.electron.store.set("notifications", newNotifications);
+        window.electron.ipcRenderer.send("show-notification", {
+          title: "Converty Update",
+          body: `${t("notifications.update")} ${remoteVersion}`,
+        });
 
-        const errorSound = new Audio("sounds/new-notification-error.wav");
-        errorSound.play().catch(e => console.log("Sound konnte nicht abgespielt werden:", e));
+        const oldNotifications: NotificationItem[] =
+          (await window.electron.store.get("notifications")) || [];
+
+        const exists = oldNotifications.some(
+          (n) => n.key === "notifications.update" && n.params?.version === remoteVersion
+        );
+
+        if (!exists) {
+          await window.electron.store.set("notifications", [
+            updateNotification,
+            ...oldNotifications,
+          ]);
+
+          new Audio("sounds/new-notification.wav").play().catch(() => {});
+        }
+      } catch (e) {
+        console.error("Update-Check fehlgeschlagen:", e);
       }
     };
 

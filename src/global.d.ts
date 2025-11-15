@@ -15,6 +15,7 @@ interface ElectronAPI {
   };
   app: {
     getLocale: () => Promise<string>;
+    getVersion: () => Promise<string>;
   };
   converts: {
     media: {

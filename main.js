@@ -57,6 +57,10 @@ ipcMain.on('show-notification', (_, { title, body }) => {
   notify.show();
 });
 
+ipcMain.handle("app:getVersion", () => {
+  return app.getVersion();
+});
+
 function buildDebugMenu() {
   const template = [
     {
