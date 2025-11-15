@@ -83,4 +83,6 @@ declare module "*.tsx" {
   export default value;
 }
 
+declare module "semver";
+
 export {};

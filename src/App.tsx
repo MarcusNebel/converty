@@ -12,6 +12,7 @@ import Help from "./pages/Help";
 import Sidebar from "./components/Sidebar";
 import { checkSetup } from "./utils/setup/setupStatus";
 import type { NotificationItem } from "./components/Sidebar";
+import semver from "semver";
 
 function AppContent() {
   const [isSetupDone, setIsSetupDone] = useState<boolean | null>(null);
@@ -92,48 +93,59 @@ function AppContent() {
         const result = await window.electron.update.check();
         if (result.error) return;
 
-        const localVersion = (await window.electron.app.getVersion()).trim();
-        const remoteVersion = (result.remoteVersion || "").trim();
+        const localVersion = await window.electron.app.getVersion();
+        const remoteVersion = result.remoteVersion;
 
         console.log("Local:", localVersion);
         console.log("Remote:", remoteVersion);
 
-        // Kein Update
-        if (!remoteVersion || localVersion === remoteVersion) return;
-        if (!result.downloadUrl) return;
+        // Prüfen, ob Remote-Version wirklich neuer ist
+        if (!semver.gt(remoteVersion, localVersion)) return;
 
         const updateNotification: NotificationItem = {
           key: "notifications.update",
           params: {
             version: remoteVersion,
-            url: result.downloadUrl,
+            url: result.downloadUrl || "",
           },
         };
 
-        if (window.notificationFn) addNotification?.(updateNotification);
+        // Panel-Benachrichtigung (wenn verfügbar)
+        if (window.notificationFn) {
+          console.log("Triggering panel notification");
+          window.notificationFn(updateNotification);
+        }
 
+        // Desktop-Benachrichtigung
+        const body = `${t("notifications.update")} ${remoteVersion}`;
         window.electron.ipcRenderer.send("show-notification", {
           title: "Converty Update",
-          body: `${t("notifications.update")} ${remoteVersion}`,
+          body,
         });
 
-        const oldNotifications: NotificationItem[] =
-          (await window.electron.store.get("notifications")) || [];
+        // In Store speichern
+        try {
+          const oldNotifications: NotificationItem[] =
+            (await window.electron.store.get("notifications")) || [];
+          const alreadyExists = oldNotifications.some(
+            (n) =>
+              n.key === "notifications.update" &&
+              n.params?.version === remoteVersion
+          );
 
-        const exists = oldNotifications.some(
-          (n) => n.key === "notifications.update" && n.params?.version === remoteVersion
-        );
+          if (!alreadyExists) {
+            const newNotifications = [updateNotification, ...oldNotifications];
+            await window.electron.store.set("notifications", newNotifications);
 
-        if (!exists) {
-          await window.electron.store.set("notifications", [
-            updateNotification,
-            ...oldNotifications,
-          ]);
-
-          new Audio("sounds/new-notification.wav").play().catch(() => {});
+            // Sound abspielen
+            const updateSound = new Audio("sounds/new-notification.wav");
+            updateSound.play().catch(() => {});
+          }
+        } catch (err) {
+          console.warn("Store konnte nicht aktualisiert werden:", err);
         }
-      } catch (e) {
-        console.error("Update-Check fehlgeschlagen:", e);
+      } catch (err: any) {
+        console.error("Update-Check fehlgeschlagen:", err.message);
       }
     };
 
