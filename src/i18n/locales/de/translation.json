@@ -136,6 +136,7 @@
     "archive": "Archiv",
     "document": "Dokument",
     "notifications": "Benachrichtigungen",
+    "clear-notifications": "Löschen",
     "settings": "Einstellungen",
     "help": "Hilfe"
   },
@@ -147,7 +148,7 @@
     "general-settings": {
       "theme": "App-Theme",
       "custom-theme": "Benutzerdefiniertes Theme",
-      "custom-css-input": "Hier kannst du dein eigenes design einfügen",
+      "custom-css-input": "Hier kannst du dein eigenes CSS design einfügen",
       "debugging": "Debugging",
       "reset-setup-modal": {
         "title": "Setup wirklich zurücksetzen?",
@@ -168,6 +169,18 @@
     "update-settings": {
       "update": "Software-Update"
     }
+  },
+  "notifications": {
+    "success": {
+      "part-one": "Konvertierung erfolgreich: ",
+      "part-two":  " Datei(en) in ",
+      "part-three": "s"
+    },
+    "error": {
+      "part-one": "Konvertierung fehlgeschlagen: "
+    },
+    "update": "Software-Update: ",
+    "update-error": "Software-Update Fehler: "
   },
   "loading": "Lädt..."
 }

@@ -136,6 +136,7 @@
     "archive": "Archive",
     "document": "Document",
     "notifications": "Notifications",
+    "clear-notifications": "Clear",
     "settings": "Settings",
     "help": "Help"
   },
@@ -147,7 +148,7 @@
     "general-settings": {
       "theme": "App Theme",
       "custom-theme": "Custom Theme",
-      "custom-css-input": "Here you can paste youre custom css",
+      "custom-css-input": "Here you can paste your custom css",
       "debugging": "Debugging",
       "reset-setup-modal": {
         "title": "Do you really want to reset the setup?",
@@ -168,6 +169,18 @@
     "update-settings": {
       "update": "Software Update"
     }
+  },
+  "notifications": {
+    "success": {
+      "part-one": "Conversion successful: ",
+      "part-two": " file(s) in ",
+      "part-three": "s"
+    },
+    "error": {
+      "part-one": "Conversion failed: "
+    },
+    "update": "Software update: ",
+    "update-error": "Software update error: "
   },
   "loading": "Loading..."
 }

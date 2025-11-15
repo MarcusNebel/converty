@@ -1,5 +1,6 @@
 import { FaImage } from "react-icons/fa";
 import ConvertPage from "./ConvertPage";
+import type { NotificationItem } from "../../components/Sidebar";
 
 const formats = [
   { value: "jpeg", label: "JPEG (.jpeg)" },
@@ -14,12 +15,20 @@ const formats = [
   { value: "avif", label: "AVIF (.avif)" },
 ].filter(Boolean);
 
-const Image = () => (
+interface ImageProps {
+  isConverting: boolean;
+  setIsConverting: React.Dispatch<React.SetStateAction<boolean>>;
+  addNotification?: (note: NotificationItem) => void;
+}
+
+const Image: React.FC<ImageProps> = ({ isConverting, setIsConverting }) => (
   <ConvertPage
     icon={FaImage}
     type="image"
     formats={formats}
     electronHandler={window.electron.converts.image}
+    isConverting={isConverting}
+    setIsConverting={setIsConverting}
   />
 );
 

@@ -5,7 +5,7 @@ import semver from "semver";
 import fs from "fs";
 import path from "path";
 import os from "os";
-import Store from "electron-store"
+import Store from "electron-store";
 
 const store = new Store();
 
@@ -19,7 +19,7 @@ function getLocalVersion() {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
     return pkg.version;
   } catch (err) {
-    console.error("Fehler beim Lesen der lokalen Version:", err);
+    console.error("Error reading local version:", err);
     return "0.0.0";
   }
 }
@@ -32,7 +32,7 @@ function isNewerVersion(remote, local) {
   }
 }
 
-// Ermittelt die Plattform
+// Determines platform-specific asset
 function getPlatformAsset(assets) {
   const platform = os.platform();
   let asset = null;
@@ -53,38 +53,20 @@ const deleteSetupFile = async (filePath) => {
   while (retries > 0) {
     try {
       fs.unlinkSync(filePath);
-      console.log("Setup-Datei gelöscht.");
+      console.log("Setup file deleted.");
       return;
     } catch (err) {
       if (err.code === "EBUSY" || err.code === "EPERM") {
-        // Datei noch in Benutzung, 500ms warten
+        // File still in use, wait 500ms
         await new Promise(res => setTimeout(res, 500));
         retries--;
       } else {
-        console.error("Fehler beim Löschen der Setup-Datei:", err);
+        console.error("Error deleting setup file:", err);
         return;
       }
     }
   }
-  console.warn("Setup-Datei konnte nach mehreren Versuchen nicht gelöscht werden:", filePath);
-};
-
-const openAndDelete = async (filePath) => {
-  return new Promise((resolve, reject) => {
-    const child = spawn(filePath, [], { detached: false, stdio: "ignore" });
-
-    child.on("error", (err) => reject(err));
-
-    child.on("close", async () => {
-      try {
-        fs.unlinkSync(filePath); // Löschen
-        resolve();
-      } catch (err) {
-        console.error("Fehler beim Löschen:", err);
-        reject(err);
-      }
-    });
-  });
+  console.warn("Setup file could not be deleted after multiple attempts:", filePath);
 };
 
 export function registerUpdateIPC() {
@@ -95,7 +77,7 @@ export function registerUpdateIPC() {
       const { data } = await axios.get(GITHUB_API_URL, { headers: { "User-Agent": "Converty-Updater" } });
 
       const remoteVersion = data.tag_name?.replace(/^v/, "") || "0.0.0";
-      const notes = data.body || "Keine Release Notes verfügbar.";
+      const notes = data.body || "No release notes available.";
       const downloadUrl = getPlatformAsset(data.assets || []);
 
       const updateAvailable = isNewerVersion(remoteVersion, localVersion);
@@ -106,26 +88,26 @@ export function registerUpdateIPC() {
         remoteVersion,
         notes,
         downloadUrl,
-        title: data.name || "Neues Release",
+        title: data.name || "New Release",
       };
     } catch (err) {
-      console.error("Update-Check fehlgeschlagen:", err.message);
+      console.error("Update check failed:", err.message);
       return {
         updateAvailable: false,
-        error: "Fehler beim Abrufen der Update-Informationen.",
+        error: "Failed to fetch update information.",
       };
     }
   });
 
   ipcMain.handle("update:download", async (event, url) => {
-    if (!url) return { success: false, error: "Kein Download-Link vorhanden." };
+    if (!url) return { success: false, error: "No download URL provided." };
 
     try {
       const tempDir = os.tmpdir();
       const fileName = path.basename(url);
       const filePath = path.join(tempDir, fileName);
 
-      // Setup-Datei zum Temp-File-Array hinzufügen
+      // Add setup file to temp file array
       const tempFiles = store.get("temp-dir-files", []);
       tempFiles.push(filePath);
       store.set("temp-dir-files", tempFiles);
@@ -146,15 +128,15 @@ export function registerUpdateIPC() {
         writer.on("error", reject);
       });
 
-      event.sender.send("update:status", "Update wird geöffnet…");
+      event.sender.send("update:status", "Opening update…");
 
-      // Installer starten **nicht awaiten**
+      // Launch installer **do not await**
       shell.openPath(filePath);
       app.quit();
 
       return { success: true };
     } catch (err) {
-      console.error("Fehler beim Herunterladen/Öffnen des Updates:", err);
+      console.error("Error downloading/opening update:", err);
       return { success: false, error: err.message };
     }
   });
