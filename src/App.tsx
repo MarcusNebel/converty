@@ -28,7 +28,7 @@ function AppContent() {
   };
 
   const loadCssTheme = async (css: string, name?: string) => {
-    setThemePref(name || "custom");
+    setThemePref("custom"); // Custom CSS hat Vorrang
     let tag = document.getElementById("custom-css-style") as HTMLStyleElement;
     if (!tag) {
       tag = document.createElement("style");
@@ -44,12 +44,10 @@ function AppContent() {
     let cancelled = false;
     (async () => {
       try {
-        // Setup prüfen
         const setupStatus = await checkSetup();
         if (cancelled) return;
         setIsSetupDone(setupStatus);
 
-        // Setup-Daten abrufen
         const timeout = new Promise(resolve => setTimeout(() => resolve(null), 3000));
         const setupData = (await Promise.race([window.electron.setup.getSetupData(), timeout])) || {};
 
@@ -58,38 +56,40 @@ function AppContent() {
         // Sprache setzen
         if (setupData.language) await i18n.changeLanguage(setupData.language).catch(() => {});
 
-        // Custom CSS laden, wenn vorhanden
+        // Zuerst Standard-Theme setzen (System oder gespeichertes)
+        let savedTheme = setupData.theme || "system";
+        if (savedTheme === "system") {
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+        } else {
+          document.documentElement.setAttribute("data-theme", savedTheme);
+        }
+        setThemePref(savedTheme);
+
+        // Danach Custom CSS laden, falls vorhanden
         const activeThemeName = await window.electron.store.get("activeCustomCSSTheme");
         if (activeThemeName) {
           const css = await window.electron.store.get(`customCSS:${activeThemeName}`);
           if (css) {
-            await loadCssTheme(css, activeThemeName); // wendet CSS an und setzt State
-          }
-        } else {
-          // Normales Theme setzen, falls kein Custom-CSS aktiv
-          const saved = setupData.theme || "system";
-          setThemePref(saved);
-          if (saved === "system") {
-            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
-          } else {
-            document.documentElement.setAttribute("data-theme", saved);
+            await loadCssTheme(css, activeThemeName); // überschreibt Standard-Theme
           }
         }
+
       } catch (err) {
         console.warn("Fehler beim Laden der App-Einstellungen:", err);
       } finally {
-        setIsAppReady(true);
+        setIsAppReady(true); // erst rendern, wenn Theme & Custom CSS gesetzt
       }
     })();
+
     return () => { cancelled = true; };
   }, [i18n]);
 
   // Reagiere auf System-Theme-Änderungen
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
-      if (themePref !== "system") return;
+      if (themePref !== "system") return; // Custom CSS oder festes Theme ignorieren
       document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
     };
     if (typeof mq.addEventListener === "function") mq.addEventListener("change", handleChange as EventListener);

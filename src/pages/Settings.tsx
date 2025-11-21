@@ -16,23 +16,44 @@ interface SaveCssModalProps {
 
 
 const SaveCssModal: React.FC<SaveCssModalProps> = ({ visible, onCancel, onSave }) => {
+  const [show, setShow] = useState(false);      // Modal im DOM
+  const [animate, setAnimate] = useState(false); // .show für Transition
   const [name, setName] = useState("");
 
-  if (!visible) return null;
+  useEffect(() => {
+    if (visible) {
+      setShow(true); // Modal ins DOM
+      const timeout = setTimeout(() => setAnimate(true), 10); // Klasse leicht verzögert hinzufügen
+      return () => clearTimeout(timeout);
+    } else {
+      setAnimate(false); // Fade-Out starten
+      const timeout = setTimeout(() => setShow(false), 300); // Dauer der CSS-Transition
+      return () => clearTimeout(timeout);
+    }
+  }, [visible]);
+
+  if (!show) return null;
 
   return (
-    <div className={`modal-backdrop ${visible ? "show" : ""}`}>
+    <div className={`modal-backdrop ${animate ? "show" : ""}`}>
       <div className="modal-content">
         <h3>Name für Custom CSS eingeben</h3>
         <input
+          className="modal-input"
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="Name eingeben..."
         />
         <div className="modal-buttons">
-          <button onClick={onCancel}>Abbrechen</button>
-          <button onClick={() => onSave(name)} disabled={!name.trim()}>Speichern</button>
+          <button className="modal-button" onClick={onCancel}>Abbrechen</button>
+          <button
+            className="modal-button"
+            onClick={() => onSave(name)}
+            disabled={!name.trim()}
+          >
+            Speichern
+          </button>
         </div>
       </div>
     </div>
@@ -216,6 +237,7 @@ export default function Home() {
   const clearCss = async () => {
     setCustomCss("");
     await window.electron.store.set("customCSS", "");
+    await window.electron.store.set("activeCustomCSSTheme", "");
 
     const tag = document.getElementById("custom-css-style");
     if (tag) tag.textContent = "";
@@ -245,6 +267,7 @@ export default function Home() {
     const themeNames: string[] = (await window.electron.store.get("customCSSNames")) || [];
     if (!themeNames.includes(name)) themeNames.push(name);
     await window.electron.store.set("customCSSNames", themeNames);
+    await window.electron.store.set("activeCustomCSSTheme", name);
 
     // CSS direkt anwenden
     let tag = document.getElementById("custom-css-style") as HTMLStyleElement;
