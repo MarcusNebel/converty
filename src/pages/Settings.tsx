@@ -3,9 +3,41 @@ import { useTranslation } from "react-i18next";
 import CustomSelect from "../components/CustomSelect";
 import "../styles/Settings.css";
 import ConfirmModal from "../utils/confirmModal";
+import "../styles/Modal.css";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaTrash } from "react-icons/fa";
+
+interface SaveCssModalProps {
+  visible: boolean;
+  onCancel: () => void;
+  onSave: (name: string) => void;
+}
+
+
+const SaveCssModal: React.FC<SaveCssModalProps> = ({ visible, onCancel, onSave }) => {
+  const [name, setName] = useState("");
+
+  if (!visible) return null;
+
+  return (
+    <div className={`modal-backdrop ${visible ? "show" : ""}`}>
+      <div className="modal-content">
+        <h3>Name für Custom CSS eingeben</h3>
+        <input
+          type="text"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          placeholder="Name eingeben..."
+        />
+        <div className="modal-buttons">
+          <button onClick={onCancel}>Abbrechen</button>
+          <button onClick={() => onSave(name)} disabled={!name.trim()}>Speichern</button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Home() {
   const [theme, setTheme] = useState<string>("system");
@@ -22,6 +54,27 @@ export default function Home() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
   const [customCss, setCustomCss] = useState("");
+  const [saveCssModalVisible, setSaveCssModalVisible] = useState(false);
+  const [savedCssThemes, setSavedCssThemes] = useState<{name: string, css: string}[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const activeThemeName = await window.electron.store.get("activeCustomCSSTheme");
+      if (!activeThemeName) return;
+
+      const css = await window.electron.store.get(`customCSS:${activeThemeName}`);
+      if (css) {
+        let tag = document.getElementById("custom-css-style") as HTMLStyleElement;
+        if (!tag) {
+          tag = document.createElement("style");
+          tag.id = "custom-css-style";
+          document.head.appendChild(tag);
+        }
+        tag.textContent = css;
+        setCustomCss(css); // damit der Switch auch richtig aktiv ist
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -99,6 +152,10 @@ export default function Home() {
     loadThemeAndLanguage();
   }, []);
 
+  useEffect(() => {
+    loadSavedCssThemes();
+  }, []);
+
   const confirmReset = async () => {
     setModalVisible(false);
     await handleReset();
@@ -155,18 +212,6 @@ export default function Home() {
     new window.Notification(notificationTitle, { body: notificationBody });
   };
 
-  const saveCss = async () => {
-    await window.electron.store.set("customCSS", customCss);
-
-    let tag = document.getElementById("custom-css-style") as HTMLStyleElement;
-    if (!tag) {
-      tag = document.createElement("style");
-      tag.id = "custom-css-style";
-      document.head.appendChild(tag);
-    }
-
-    tag.textContent = customCss;
-  };
 
   const clearCss = async () => {
     setCustomCss("");
@@ -174,6 +219,79 @@ export default function Home() {
 
     const tag = document.getElementById("custom-css-style");
     if (tag) tag.textContent = "";
+  };
+
+  const loadSavedCssThemes = async () => {
+    // Angenommen, wir wissen nicht, welche Keys existieren, wir speichern die Namen in einem extra-Array:
+    const themeNames: string[] = (await window.electron.store.get("customCSSNames")) || [];
+    const themes: { name: string; css: string }[] = [];
+
+    for (const name of themeNames) {
+      const css = await window.electron.store.get(`customCSS:${name}`);
+      if (css) themes.push({ name, css });
+    }
+
+    setSavedCssThemes(themes);
+  };
+
+  const handleOpenSaveCssModal = () => setSaveCssModalVisible(true);
+
+  const handleSaveCssWithName = async (name: string) => {
+    setSaveCssModalVisible(false);
+
+    await window.electron.store.set(`customCSS:${name}`, customCss);
+
+    // Theme-Namen-Array aktualisieren
+    const themeNames: string[] = (await window.electron.store.get("customCSSNames")) || [];
+    if (!themeNames.includes(name)) themeNames.push(name);
+    await window.electron.store.set("customCSSNames", themeNames);
+
+    // CSS direkt anwenden
+    let tag = document.getElementById("custom-css-style") as HTMLStyleElement;
+    if (!tag) {
+      tag = document.createElement("style");
+      tag.id = "custom-css-style";
+      document.head.appendChild(tag);
+    }
+    tag.textContent = customCss;
+
+    // Kacheln aktualisieren
+    await loadSavedCssThemes();
+  };
+
+  // CSS-Theme laden
+  const loadCssTheme = (themeCss: string, name?: string) => {
+    setCustomCss(themeCss);
+
+    let tag = document.getElementById("custom-css-style") as HTMLStyleElement;
+    if (!tag) {
+      tag = document.createElement("style");
+      tag.id = "custom-css-style";
+      document.head.appendChild(tag);
+    }
+    tag.textContent = themeCss;
+
+    // Name speichern, wenn übergeben
+    if (name) {
+      console.log("Set active CSS theme name:", name);
+      window.electron.store.set("activeCustomCSSTheme", name);
+    }
+  };
+
+  const deleteCssTheme = async (name: string) => {
+    // Delete the CSS theme from store
+    await window.electron.store.delete(`customCSS:${name}`);
+
+    // update Theme-Name-Array
+    const themeNames: string[] = (await window.electron.store.get("customCSSNames")) || [];
+    const updatedNames = themeNames.filter(n => n !== name);
+    await window.electron.store.set("customCSSNames", updatedNames);
+
+    // update state
+    setSavedCssThemes(prev => prev.filter(t => t.name !== name));
+
+    // If the deleted theme was active, reset CSS
+    if (customCss === (await window.electron.store.get(`customCSS:${name}`))) clearCss();
   };
 
   return (
@@ -231,8 +349,56 @@ export default function Home() {
               />
 
               <div className="clear-and-save-btns">
-                <button className="btn-settings" onClick={saveCss}>Save</button>
-                <button className="btn-warning" onClick={clearCss}>Clear</button>
+                <button className="btn-settings" onClick={handleOpenSaveCssModal}>Save</button>
+                  <SaveCssModal
+                    visible={saveCssModalVisible}
+                    onCancel={() => setSaveCssModalVisible(false)}
+                    onSave={handleSaveCssWithName}
+                  />
+              </div>
+
+              <div className="saved-css-themes">
+                {savedCssThemes.map(theme => {
+                  const isActive = customCss === theme.css;
+
+                  return (
+                    <div key={theme.name} className="css-theme-tile">
+                      <div className="css-theme-name">{theme.name}</div>
+
+                      <div className="control-elements-custom-css">
+                        <div className="theme-switch">
+                          <label className="switch">
+                            <input
+                              type="checkbox"
+                              checked={isActive}
+                              onChange={e => {
+                                if (e.target.checked) loadCssTheme(theme.css, theme.name);
+                                else clearCss();
+                              }}
+                            />
+                            <span className="slider"></span>
+                          </label>
+                        </div>
+
+                        <button
+                          className="delete-theme-btn"
+                          onClick={async () => {
+                            const activeTheme = await window.electron.store.get("activeCustomCSSTheme");
+
+                            // Wenn das zu löschende Theme aktuell aktiv ist, CSS zuerst löschen
+                            if (theme.name === activeTheme) {
+                              clearCss();
+                            }
+
+                            deleteCssTheme(theme.name);
+                          }}
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

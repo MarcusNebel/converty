@@ -50,4 +50,9 @@ export function registerStoreIPC() {
     store.set(key, value);
     return true;
   });
+
+  ipcMain.handle("store:delete", (_, key) => {
+    store.delete(key);
+    return true;
+  });
 }

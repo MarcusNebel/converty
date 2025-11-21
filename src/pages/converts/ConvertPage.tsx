@@ -334,6 +334,10 @@ const ConvertPage: FC<ConvertPageProps> = ({ icon: Icon, type, formats, electron
                     setFiles(prev => {
                       const copy = [...prev];
                       copy[idx].targetFormat = value;
+
+                      const allSame = copy.every(f => f.targetFormat === value);
+                      if (allSame) setGlobalFormat(value);
+
                       return copy;
                     })
                   }

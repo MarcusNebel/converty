@@ -212,3 +212,107 @@
   box-sizing: border-box;
   transition: all 0.2s ease;
 }
+
+
+.saved-css-themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.css-theme-tile {
+  flex: 1 0 120px;
+  max-width: 150px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-elevate);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.css-theme-tile:hover {
+  box-shadow: var(--shadow-elevate-hover);
+}
+
+.css-theme-name {
+  font-weight: 600;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.theme-switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.control-elements-custom-css {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 8px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--color-border);
+  transition: 0.4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--color-primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.delete-theme-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-error);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.delete-theme-btn:hover {
+  color: var(--color-error-hover);
+}
