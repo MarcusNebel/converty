@@ -5,9 +5,7 @@ import ffmpeg from "fluent-ffmpeg";
 import ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 import { fileURLToPath } from "url";
 import os from "os";
-import Store from "electron-store";
-
-const store = new Store();
+import store from "../electronStore.js";
 
 let ffmpegPath = ffmpegInstaller.path;
 

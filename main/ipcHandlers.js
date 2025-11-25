@@ -1,7 +1,5 @@
 import { app, ipcMain } from "electron";
-import Store from 'electron-store';
-
-const store = new Store();
+import store from "./electronStore.js";
 
 export function logToRenderer(win, ...args) {
   if (win && !win.isDestroyed()) {

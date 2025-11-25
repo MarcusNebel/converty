@@ -1,7 +1,5 @@
 import { ipcMain } from "electron";
-import Store from "electron-store"
-
-const store = new Store();
+import store from "./electronStore.js";
 
 export function registerSetupIPC() {
   ipcMain.handle('setup:isCompleted', () => store.get('setupCompleted', false));

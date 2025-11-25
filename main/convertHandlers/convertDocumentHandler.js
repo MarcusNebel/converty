@@ -2,7 +2,7 @@ import { ipcMain, dialog } from "electron";
 import path from "path";
 import fs from "fs";
 import { execFile } from "child_process";
-import store from "../electronStore.js"
+import store from "../electronStore.js";
 
 function getLibreOfficePath() {
   const platform = process.platform;

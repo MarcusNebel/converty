@@ -1,9 +1,7 @@
 import { ipcMain, dialog } from "electron";
 import path from "path";
 import fs from "fs";
-import Store from "electron-store"
-
-const store = new Store();
+import store from "../electronStore.js";
 
 export function registerConvertImageIPC() {
   ipcMain.handle("image:convertFiles", async (event, files) => {

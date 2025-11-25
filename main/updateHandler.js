@@ -5,9 +5,7 @@ import semver from "semver";
 import fs from "fs";
 import path from "path";
 import os from "os";
-import Store from "electron-store";
-
-const store = new Store();
+import store from "./electronStore.js";
 
 const REPO_OWNER = "MarcusNebel";
 const REPO_NAME = "converty";

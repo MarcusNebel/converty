@@ -2,6 +2,7 @@ import { app, ipcMain, dialog } from "electron";
 import path from "path";
 import fs from "fs";
 import { spawn } from "child_process";
+import store from "../electronStore.js";
 
 export function get7ZipPath() {
   const platform = process.platform;
