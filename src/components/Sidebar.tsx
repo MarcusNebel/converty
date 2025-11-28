@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   FaFileAlt,
   FaCog,
-  FaQuestionCircle,
   FaVideo,
   FaImage,
   FaArchive,
   FaBell,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import { MdSpaceDashboard } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import "../styles/Sidebar.css";
+import { SettingsContext } from "../utils/context/SettingsContext";
 
 export type NotificationItem = {
   key: string;
@@ -31,8 +32,17 @@ const Sidebar: React.FC<SidebarProps> = ({ active, onSelect, isConverting }) => 
   const [closing, setClosing] = useState(false);
   const notificationRef = useRef<HTMLDivElement | null>(null);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const navigate = useNavigate();
+  const settingsContext = useContext(SettingsContext);
 
-  // Externe Funktion zum Hinzufügen von Notifications
+  const handleNotificationClick = () => {
+    if (settingsContext && settingsContext.setActiveTab) {
+      settingsContext.setActiveTab("update");
+    }
+    navigate("/settings?tab=update");
+    setClosing(true);
+  };
+
   useEffect(() => {
     const interval = setInterval(async () => {
       const stored: NotificationItem[] = (await window.electron.store.get("notifications")) || [];
@@ -50,7 +60,6 @@ const Sidebar: React.FC<SidebarProps> = ({ active, onSelect, isConverting }) => 
     }
   };
 
-  // Klick außerhalb schließt das Panel
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -126,18 +135,6 @@ const Sidebar: React.FC<SidebarProps> = ({ active, onSelect, isConverting }) => 
           <span className="icon"><FaCog /></span>
           <span className="label">{t("sidebar.settings")}</span>
         </div>
-
-        <div
-          className={`sidebar-item ${active === "help" ? "active" : ""}`}
-          onClick={() => !isConverting && onSelect("help")}
-          style={{
-            pointerEvents: isConverting ? "none" : "auto",
-            opacity: isConverting ? 0.5 : 1,
-          }}
-        >
-          <span className="icon"><FaQuestionCircle /></span>
-          <span className="label">{t("sidebar.help")}</span>
-        </div>
       </div>
 
       {showNotifications && (
@@ -157,7 +154,14 @@ const Sidebar: React.FC<SidebarProps> = ({ active, onSelect, isConverting }) => 
           </div>
           <ul>
             {notifications.map((note, index) => (
-              <li key={index}>
+              <li 
+                key={index}
+                onClick={() => {
+                  if (note.key === "notifications.update") {
+                    handleNotificationClick();
+                  }
+                }}
+              >
                 {note.key === "notifications.success"
                   ? `${t("notifications.success.part-one")}${note.params?.count}${t("notifications.success.part-two")}${note.params?.duration}${t("notifications.success.part-three")}`
                   : note.key === "notifications.error"

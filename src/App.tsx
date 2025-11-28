@@ -8,11 +8,11 @@ import Media from "./pages/converts/Media";
 import Image from "./pages/converts/Image";
 import Document from "./pages/converts/Document";
 import Settings from "./pages/Settings";
-import Help from "./pages/Help";
 import Sidebar from "./components/Sidebar";
 import { checkSetup } from "./utils/setup/setupStatus";
 import type { NotificationItem } from "./components/Sidebar";
 import semver from "semver";
+import { SettingsContext } from "./utils/context/SettingsContext";
 
 function AppContent() {
   const [isSetupDone, setIsSetupDone] = useState<boolean | null>(null);
@@ -22,6 +22,7 @@ function AppContent() {
   const { t, i18n } = useTranslation();
   const [themePref, setThemePref] = useState<string>("system");
   const [isConverting, setIsConverting] = useState(false);
+  const [activeTab, setActiveTab] = useState("general");
 
   const addNotification = (note: NotificationItem) => {
     if (window.notificationFn) window.notificationFn(note);
@@ -142,8 +143,9 @@ function AppContent() {
   if (!isSetupDone) return <SetupWizard onSetupComplete={() => setIsSetupDone(true)} />;
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      <Sidebar
+    <SettingsContext.Provider value={{ activeTab, setActiveTab }}>
+      <div style={{ display: "flex", height: "100vh" }}>
+        <Sidebar
         active={location.pathname.replace("/", "") || "dashboard"}
         onSelect={(page) => navigate(page === "dashboard" ? "/" : "/" + page)}
         isConverting={isConverting}
@@ -157,10 +159,10 @@ function AppContent() {
           <Route path="/convert-archive" element={<Archive isConverting={isConverting} setIsConverting={setIsConverting} addNotification={addNotification} />} />
           <Route path="/convert-document" element={<Document isConverting={isConverting} setIsConverting={setIsConverting} addNotification={addNotification} />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/help" element={<Help />} />
         </Routes>
       </div>
     </div>
+    </SettingsContext.Provider>
   );
 }
 

@@ -25,12 +25,26 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Get commit messages since last tag
+        id: changelog
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s")
+          else
+            COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"- %s")
+          fi
+          echo "changelog=$COMMITS" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.get-version.outputs.version }}
           name: "Converty ${{ needs.get-version.outputs.version }}"
+          body: ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
         env:
@@ -82,4 +96,3 @@ jobs:
             dist/mac-arm64/*.pkg
             dist/mac-arm64/*.zip
           token: ${{ secrets.GH_PAT }}
-          

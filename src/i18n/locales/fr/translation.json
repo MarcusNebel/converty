@@ -137,8 +137,7 @@
     "document": "Document",
     "notifications": "Notifications",
     "clear-notifications": "Nettoyer",
-    "settings": "Paramètres",
-    "help": "Aide"
+    "settings": "Paramètres"
   },
   "settings": {
     "general": "Général",

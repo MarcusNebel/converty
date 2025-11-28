@@ -1,9 +1,9 @@
 {
   "name": "converty",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Marcus Nebel",
-  "description": "Converty – Datei-Konvertierungs-App",
+  "description": "Converty – File conversion made easy",
   "main": "main.js",
   "type": "module",
   "build": {

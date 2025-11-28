@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CustomSelect from "../components/CustomSelect";
 import "../styles/Settings.css";
@@ -7,6 +8,8 @@ import "../styles/Modal.css";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { FaCheck, FaTrash } from "react-icons/fa";
+import { useContext } from "react";
+import { SettingsContext } from "../utils/context/SettingsContext";
 
 interface SaveCssModalProps {
   visible: boolean;
@@ -60,9 +63,9 @@ const SaveCssModal: React.FC<SaveCssModalProps> = ({ visible, onCancel, onSave }
   );
 };
 
-export default function Home() {
+export default function Settings() {
   const [theme, setTheme] = useState<string>("system");
-  const [activeTab, setActiveTab] = useState<string>("general");
+  const { activeTab, setActiveTab } = useContext(SettingsContext)!;
   const [modalVisible, setModalVisible] = useState(false);
   const [language, setLanguage] = useState<string>("en");
   const { t, i18n } = useTranslation();
@@ -77,6 +80,13 @@ export default function Home() {
   const [customCss, setCustomCss] = useState("");
   const [saveCssModalVisible, setSaveCssModalVisible] = useState(false);
   const [savedCssThemes, setSavedCssThemes] = useState<{name: string, css: string}[]>([]);
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get("tab");
+    if (tab) setActiveTab(tab);
+  }, [location.search]);
 
   useEffect(() => {
     (async () => {
@@ -319,264 +329,265 @@ export default function Home() {
 
   return (
     <div className="settings-page">
-      <div className="top-navbar">
-        <span
-          className={`navbar-option ${activeTab === "general" ? "active" : ""}`}
-          onClick={() => setActiveTab("general")}
-        >
-          {t("settings.general")}
-        </span>
-        <span
-          className={`navbar-option ${activeTab === "notifications" ? "active" : ""}`}
-          onClick={() => setActiveTab("notifications")}
-        >
-          {t("settings.notifications")}
-        </span>
-        <span
-          className={`navbar-option ${activeTab === "output" ? "active" : ""}`}
-          onClick={() => setActiveTab("output")}
-        >
-          {t("settings.output")}
-        </span>
-        <span
-          className={`navbar-option ${activeTab === "update" ? "active" : ""}`}
-          onClick={() => setActiveTab("update")}
-        >
-          {t("settings.update")}
-        </span>
-      </div>
+        <div className="top-navbar">
+          <span
+            className={`navbar-option ${activeTab === "general" ? "active" : ""}`}
+            onClick={() => setActiveTab("general")}
+          >
+            {t("settings.general")}
+          </span>
+          <span
+            className={`navbar-option ${activeTab === "notifications" ? "active" : ""}`}
+            onClick={() => setActiveTab("notifications")}
+          >
+            {t("settings.notifications")}
+          </span>
+          <span
+            className={`navbar-option ${activeTab === "output" ? "active" : ""}`}
+            onClick={() => setActiveTab("output")}
+          >
+            {t("settings.output")}
+          </span>
+          <span
+            className={`navbar-option ${activeTab === "update" ? "active" : ""}`}
+            onClick={() => setActiveTab("update")}
+          >
+            {t("settings.update")}
+          </span>
+        </div>
 
-      <div className="settings-content">
-        {activeTab === "general" && (
-          <div className="settings-general-grid">
-            <h2 className="h2-settings">{t("settings.general-settings.theme")}</h2>
-            <CustomSelect
-              options={[
-                { value: "system", label: t("home.theme.system") },
-                { value: "light", label: t("home.theme.light") },
-                { value: "dark", label: t("home.theme.dark") },
-              ]}
-              value={theme}
-              onChange={handleThemeChange}
-              placeholder={t("setup.steps.theme_label")}
-            />
-
-            <div className="custom-css-settings">
-              <h2 className="h2-settings">{t("settings.general-settings.custom-theme")}</h2>
-
-              <input
-                className="custom-css-input"
-                placeholder={t("settings.general-settings.custom-css-input")}
-                value={customCss}
-                onChange={e => setCustomCss(e.target.value)}
-              />
-
-              <div className="clear-and-save-btns">
-                <button className="btn-settings" onClick={handleOpenSaveCssModal}>Save</button>
-                  <SaveCssModal
-                    visible={saveCssModalVisible}
-                    onCancel={() => setSaveCssModalVisible(false)}
-                    onSave={handleSaveCssWithName}
-                  />
-              </div>
-
-              <div className="saved-css-themes">
-                {savedCssThemes.map(theme => {
-                  const isActive = customCss === theme.css;
-
-                  return (
-                    <div key={theme.name} className="css-theme-tile">
-                      <div className="css-theme-name">{theme.name}</div>
-
-                      <div className="control-elements-custom-css">
-                        <div className="theme-switch">
-                          <label className="switch">
-                            <input
-                              type="checkbox"
-                              checked={isActive}
-                              onChange={e => {
-                                if (e.target.checked) loadCssTheme(theme.css, theme.name);
-                                else clearCss();
-                              }}
-                            />
-                            <span className="slider"></span>
-                          </label>
-                        </div>
-
-                        <button
-                          className="delete-theme-btn"
-                          onClick={async () => {
-                            const activeTheme = await window.electron.store.get("activeCustomCSSTheme");
-
-                            // Wenn das zu löschende Theme aktuell aktiv ist, CSS zuerst löschen
-                            if (theme.name === activeTheme) {
-                              clearCss();
-                            }
-
-                            deleteCssTheme(theme.name);
-                          }}
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="language-settings">
-              <h2 className="h2-settings">{t("settings.general-settings.language-settings.title")}</h2>
+        <div className="settings-content">
+          {activeTab === "general" && (
+            <div className="settings-general-grid">
+              <h2 className="h2-settings">{t("settings.general-settings.theme")}</h2>
               <CustomSelect
                 options={[
-                  { value: "en", label: t("setup.steps.language_english") },
-                  { value: "de", label: t("setup.steps.language_german") },
-                  { value: "fr", label: t("setup.steps.language_french") },
+                  { value: "system", label: t("home.theme.system") },
+                  { value: "light", label: t("home.theme.light") },
+                  { value: "dark", label: t("home.theme.dark") },
                 ]}
-                value={language}
-                onChange={handleLanguageChange}
-                placeholder={t("setup.steps.language_label")}
+                value={theme}
+                onChange={handleThemeChange}
+                placeholder={t("setup.steps.theme_label")}
               />
-            </div>
 
-            <div className="settings-debugging">
-              <h2 className="h2-settings">{t("settings.general-settings.debugging")}</h2>
-              <button className="btn-settings" onClick={handleShowElectronStoreData}>
-                Electron-Store-Daten anzeigen
-              </button>
-              <button className="btn-settings" onClick={handleShowData}>
-                Setup-Daten anzeigen
-              </button>
-              <button className="btn-warning" onClick={() => setModalVisible(true)}>
-                Setup zurücksetzen
-              </button>
+              <div className="custom-css-settings">
+                <h2 className="h2-settings">{t("settings.general-settings.custom-theme")}</h2>
 
-              <ConfirmModal
-                visible={modalVisible}
-                title={t("settings.general-settings.reset-setup-modal.title")}
-                description={t("settings.general-settings.reset-setup-modal.description")}
-                confirmText={t("settings.general-settings.reset-setup-modal.confirm-text")}
-                cancelText={t("settings.general-settings.reset-setup-modal.cancel-text")}
-                onConfirm={confirmReset}
-                onCancel={() => setModalVisible(false)}
-              />
-            </div>
-          </div>
-        )}
+                <input
+                  className="custom-css-input"
+                  placeholder={t("settings.general-settings.custom-css-input")}
+                  value={customCss}
+                  onChange={e => setCustomCss(e.target.value)}
+                />
 
-        {activeTab === "notifications" && (
-          <div className="settings-notifications">
-            <h2 className="h2-settings">{t("settings.notification-settings.notifications")}</h2>
-            <button className="btn-settings" onClick={sendNotification}>
-              Test Notification
-            </button>
-          </div>
-        )}
+                <div className="clear-and-save-btns">
+                  <button className="btn-settings" onClick={handleOpenSaveCssModal}>Save</button>
+                    <SaveCssModal
+                      visible={saveCssModalVisible}
+                      onCancel={() => setSaveCssModalVisible(false)}
+                      onSave={handleSaveCssWithName}
+                    />
+                </div>
 
-        {activeTab === "output" && (
-          <div className="settings-output">
-            <h2 className="h2-settings">{t("settings.output-settings.output")}</h2>
-            <p>Hier kannst du später den Output-Pfad einstellen…</p>
-          </div>
-        )}
+                <div className="saved-css-themes">
+                  {savedCssThemes.map(theme => {
+                    const isActive = customCss === theme.css;
 
-        {activeTab === "update" && (
-          <div className="settings-update">
-            <h2 className="h2-settings">{t("settings.update-settings.update")}</h2>
+                    return (
+                      <div key={theme.name} className="css-theme-tile">
+                        <div className="css-theme-name">{theme.name}</div>
 
-            <div className="update-card">
-              {checking && <p>Prüfe auf Updates...</p>}
-              {error && <p className="error-text">{error}</p>}
+                        <div className="control-elements-custom-css">
+                          <div className="theme-switch">
+                            <label className="switch">
+                              <input
+                                type="checkbox"
+                                checked={isActive}
+                                onChange={e => {
+                                  if (e.target.checked) loadCssTheme(theme.css, theme.name);
+                                  else clearCss();
+                                }}
+                              />
+                              <span className="slider"></span>
+                            </label>
+                          </div>
 
-              {updateData && (
-                <>
-                  {updateData.updateAvailable ? (
-                    <>
-                      {/* Versionsinfos */}
-                      <div className="version-info">
-                        <div>
-                          <span>Neueste Version: {updateData.remoteVersion}</span>
-                        </div>
-                      </div>
+                          <button
+                            className="delete-theme-btn"
+                            onClick={async () => {
+                              const activeTheme = await window.electron.store.get("activeCustomCSSTheme");
 
-                      {/* Release-Titel */}
-                      <h3>{updateData.title}</h3>
+                              // Wenn das zu löschende Theme aktuell aktiv ist, CSS zuerst löschen
+                              if (theme.name === activeTheme) {
+                                clearCss();
+                              }
 
-                      {/* Release Notes */}
-                      <div className="release-notes">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {updateData.notes}
-                        </ReactMarkdown>
-                      </div>
-
-                      <div className="update-check-download-btns">
-                        {/* Update Button */}
-                        <button
-                          className="btn-settings"
-                          onClick={startDownload}
-                          disabled={isDownloading || !updateData?.downloadUrl}
-                        >
-                          {isDownloading ? "Herunterladen..." : "Update herunterladen"}
-                        </button>
-
-                        {/* Prüfen-Button */}
-                        <button
-                          className="btn-settings"
-                          onClick={checkForUpdates}
-                          disabled={checking}
-                        >
-                          {checking ? "Wird geprüft..." : "Erneut prüfen"}
-                        </button>
-                      </div>
-
-                      {isDownloading || downloadComplete ? (
-                        <div style={{ marginTop: "12px" }}>
-                          <div
-                            style={{
-                              background: "var(--color-bg-alt)",
-                              borderRadius: "8px",
-                              height: "16px",
-                              width: "100%",
-                              overflow: "hidden",
+                              deleteCssTheme(theme.name);
                             }}
                           >
-                            <div
-                              style={{
-                                width: downloadComplete ? "100%" : `${progress}%`,
-                                height: "100%",
-                                background: "var(--color-primary)",
-                                transition: "width 0.2s ease",
-                              }}
-                            />
-                          </div>
-                          <div style={{ fontSize: "0.85rem", marginTop: "4px", color: "var(--color-text)" }}>
-                            {downloadComplete ? "Update-Datei wird geöffnet…" : downloadedText}
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="language-settings">
+                <h2 className="h2-settings">{t("settings.general-settings.language-settings.title")}</h2>
+                <CustomSelect
+                  options={[
+                    { value: "en", label: t("setup.steps.language_english") },
+                    { value: "de", label: t("setup.steps.language_german") },
+                    { value: "fr", label: t("setup.steps.language_french") },
+                  ]}
+                  value={language}
+                  onChange={handleLanguageChange}
+                  placeholder={t("setup.steps.language_label")}
+                />
+              </div>
+
+              <div className="settings-debugging">
+                <h2 className="h2-settings">{t("settings.general-settings.debugging")}</h2>
+                <button className="btn-settings" onClick={handleShowElectronStoreData}>
+                  Electron-Store-Daten anzeigen
+                </button>
+                <button className="btn-settings" onClick={handleShowData}>
+                  Setup-Daten anzeigen
+                </button>
+                <button className="btn-warning" onClick={() => setModalVisible(true)}>
+                  Setup zurücksetzen
+                </button>
+
+                <ConfirmModal
+                  visible={modalVisible}
+                  title={t("settings.general-settings.reset-setup-modal.title")}
+                  description={t("settings.general-settings.reset-setup-modal.description")}
+                  confirmText={t("settings.general-settings.reset-setup-modal.confirm-text")}
+                  cancelText={t("settings.general-settings.reset-setup-modal.cancel-text")}
+                  onConfirm={confirmReset}
+                  onCancel={() => setModalVisible(false)}
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "notifications" && (
+            <div className="settings-notifications">
+              <h2 className="h2-settings">{t("settings.notification-settings.notifications")}</h2>
+              <button className="btn-settings" onClick={sendNotification}>
+                Test Notification
+              </button>
+            </div>
+          )}
+
+          {activeTab === "output" && (
+            <div className="settings-output">
+              <h2 className="h2-settings">{t("settings.output-settings.output")}</h2>
+              <p>Hier kannst du später den Output-Pfad einstellen…</p>
+            </div>
+          )}
+
+          {activeTab === "update" && (
+            <div className="settings-update">
+              <h2 className="h2-settings">{t("settings.update-settings.update")}</h2>
+
+              <div className="update-card">
+                {checking && <p>Prüfe auf Updates...</p>}
+                {error && <p className="error-text">{error}</p>}
+
+                {updateData && (
+                  <>
+                    {updateData.updateAvailable ? (
+                      <>
+                        {/* Versionsinfos */}
+                        <div className="version-info">
+                          <div>
+                            <span>Neueste Version: {updateData.remoteVersion}</span>
                           </div>
                         </div>
-                      ) : null}
-                    </>
-                  ) : (
-                    <>
-                      <p>Converty ist bereits auf dem neuesten Stand. <FaCheck /></p>
 
-                      <div className="update-check-download-btns">
-                        {/* Prüfen-Button auch hier anzeigen */}
-                        <button
-                          className="btn-settings-no-margin"
-                          onClick={checkForUpdates}
-                          disabled={checking}
-                        >
-                          {checking ? "Wird geprüft..." : "Erneut prüfen"}
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
+                        {/* Release-Titel */}
+                        <h3>{updateData.title}</h3>
+
+                        {/* Release Notes */}
+                        <div className="release-notes">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {updateData.notes}
+                          </ReactMarkdown>
+                        </div>
+
+                        <div className="update-check-download-btns">
+                          {/* Update Button */}
+                          <button
+                            className="btn-settings"
+                            onClick={startDownload}
+                            disabled={isDownloading || !updateData?.downloadUrl}
+                          >
+                            {isDownloading ? "Herunterladen..." : "Update herunterladen"}
+                          </button>
+
+                          {/* Prüfen-Button */}
+                          <button
+                            className="btn-settings"
+                            onClick={checkForUpdates}
+                            disabled={checking}
+                          >
+                            {checking ? "Wird geprüft..." : "Erneut prüfen"}
+                          </button>
+                        </div>
+
+                        {isDownloading || downloadComplete ? (
+                          <div style={{ marginTop: "12px" }}>
+                            <div
+                              style={{
+                                background: "var(--color-bg-alt)",
+                                borderRadius: "8px",
+                                height: "16px",
+                                width: "100%",
+                                overflow: "hidden",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  width: downloadComplete ? "100%" : `${progress}%`,
+                                  height: "100%",
+                                  background: "var(--color-primary)",
+                                  transition: "width 0.2s ease",
+                                }}
+                              />
+                            </div>
+                            <div style={{ fontSize: "0.85rem", marginTop: "4px", color: "var(--color-text)" }}>
+                              {downloadComplete ? "Update-Datei wird geöffnet…" : downloadedText}
+                            </div>
+                          </div>
+                        ) : null}
+                      </>
+                    ) : (
+                      <>
+                        <p>Converty ist bereits auf dem neuesten Stand. <FaCheck /></p>
+
+                        <div className="update-check-download-btns">
+                          {/* Prüfen-Button auch hier anzeigen */}
+                          <button
+                            className="btn-settings-no-margin"
+                            onClick={checkForUpdates}
+                            disabled={checking}
+                          >
+                            {checking ? "Wird geprüft..." : "Erneut prüfen"}
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      
     </div>
   );
 }
