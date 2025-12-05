@@ -32,14 +32,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          set +e
           TAG=${{ needs.get-version.outputs.version }}
 
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY"
           if [ $? -eq 0 ]; then
             echo "Release exists. Deleting…"
             gh release delete "$TAG" --yes --repo "$GITHUB_REPOSITORY"
-            git push origin :refs/tags/"$TAG"
           else
             echo "Release does not exist."
           fi
@@ -47,8 +45,6 @@ jobs:
   create-release:
     needs: [get-version, delete-release-if-exists]
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - uses: actions/checkout@v4
 
