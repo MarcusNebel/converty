@@ -35,7 +35,6 @@ jobs:
           set +e
           TAG=${{ needs.get-version.outputs.version }}
 
-          # Prüfen, ohne dass der Job bei "nicht gefunden" abbricht
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY"
           if [ $? -eq 0 ]; then
             echo "Release exists. Deleting…"
@@ -81,6 +80,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Git LFS
+        run: git lfs install
+
+      - name: Pull LFS files
+        run: git lfs pull
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
