@@ -29,6 +29,8 @@ jobs:
         run: sudo apt-get install gh -y
 
       - name: Delete release if it exists
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           set +e
           TAG=${{ needs.get-version.outputs.version }}
