@@ -42,7 +42,7 @@ interface ElectronAPI {
   };
   libreoffice: {
     checkInstalled: () => Promise<boolean>;
-    downloadAndInstall: () => Promise<void>;
+    prepare: () => Promise<boolean>;
   };
   on: (channel: string, callback: (event: any, msg: any) => void) => void;
   ipcRenderer: {

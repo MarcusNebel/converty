@@ -44,12 +44,12 @@ contextBridge.exposeInMainWorld('electron', {
   },
   update: {
     check: () => ipcRenderer.invoke("update:check"),
-    download: (url) => ipcRenderer.invoke("update:download", url),
+    prepare: () => ipcRenderer.invoke("update:prepare"),
   },
 
   libreoffice: {
     checkInstalled: () => ipcRenderer.invoke("libreoffice:checkInstalled"),
-    downloadAndInstall: () => ipcRenderer.invoke("libreoffice:downloadAndInstall"),
+    prepare: () => ipcRenderer.invoke("libreoffice:prepare"),
   },
 
   on: (channel, callback) => {

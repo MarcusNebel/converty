@@ -439,3 +439,8 @@
   width: 15px;
   height: 15px;
 }
+
+.libreoffice-text {
+  color: var(--color-text);
+  font-size: 15px;
+}

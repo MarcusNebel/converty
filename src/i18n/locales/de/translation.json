@@ -43,12 +43,12 @@
       "language_english": "Englisch",
       "language_french": "Französisch",
       "libreoffice_title": "LibreOffice Installation",
-      "libreoffice_description": "Um Dokumente konvertieren zu können, muss LibreOffice installiert sein.",
-      "libreoffice_checking": "Überprüfe LibreOffice Installation...",
-      "libreoffice_installed": "LibreOffice ist bereits installiert.",
-      "libreoffice_missing": "LibreOffice ist nicht installiert.",
-      "libreoffice_install_button": "LibreOffice herunterladen und installieren",
-      "libreoffice_downloading": "LibreOffice wird heruntergeladen..."
+      "libreoffice_description": "Um Dokumente konvertieren zu können, muss LibreOffice vorbereitet sein.",
+      "libreoffice_checking": "Überprüfe LibreOffice Vorbereitung...",
+      "libreoffice_installed": "LibreOffice ist bereits vorbereitet.",
+      "libreoffice_missing": "LibreOffice ist nicht vorbereitet.",
+      "libreoffice_prepare_button": "LibreOffice vorbereiten",
+      "libreoffice_preparing": "LibreOffice wird vorbereitet..."
     }
   },
   "home": {

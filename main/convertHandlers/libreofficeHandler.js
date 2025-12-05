@@ -1,134 +1,130 @@
-import { ipcMain } from "electron";
+import { ipcMain, app } from "electron";
 import path from "path";
+import { fileURLToPath } from "url";
 import fs from "fs";
-import { exec, execSync } from "child_process";
-import os from "os";
-import https from "https";
+import { spawn } from "child_process";
 
-export function registerLibreOfficeIPC() {
-  const DOWNLOAD_URLS = {
-    win32: "https://mirror.netcologne.de/tdf/libreoffice/stable/25.8.2/win/x86_64/LibreOffice_25.8.2_Win_x86-64.msi",
-    darwin: "https://ftp.halifax.rwth-aachen.de/tdf/libreoffice/stable/25.8.2/mac/x86_64/LibreOffice_25.8.2_MacOS_x86-64.dmg",
-    linux: "https://tdf.bio.lmu.de/libreoffice/stable/25.8.2/deb/x86_64/LibreOffice_25.8.2_Linux_x86-64_deb.tar.gz",
-  };
+// Aktuelles Verzeichnis der Datei (anstatt __dirname)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-  function isLibreOfficeInstalledWin() {
-    try {
-      console.log("[DEBUG] Checking LibreOffice on Windows...");
-      const result = execSync(
-        'reg query "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall" /s /f "LibreOffice"'
-      ).toString();
-      const installed = result.includes("LibreOffice");
-      console.log("[DEBUG] Result:", installed);
-      return installed;
-    } catch (err) {
-      console.error("[DEBUG] Error while checking on Windows:", err);
-      return false;
+// --------------------- 7-Zip Helper ---------------------
+function get7ZipPath() {
+  const platform = process.platform;
+  let finalPath;
+
+  if (!app.isPackaged) {
+    finalPath = path.join(
+      __dirname,
+      "..",
+      "..",
+      "bin",
+      platform,
+      "7zip",
+      platform === "win32" ? "x64" : "",
+      platform === "win32" ? "7za.exe" : "7zz"
+    );
+  } else {
+    finalPath = path.join(
+      process.resourcesPath,
+      "app.asar.unpacked",
+      "bin",
+      platform,
+      "7zip",
+      platform === "win32" ? "x64" : "",
+      platform === "win32" ? "7za.exe" : "7zz"
+    );
+  }
+
+  if (!fs.existsSync(finalPath)) {
+    throw new Error(`7-Zip not found! Path: ${finalPath}`);
+  }
+
+  return finalPath;
+}
+
+function run7zip(execPath, args, options = {}) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(execPath, args, options);
+    let stderr = "";
+    proc.stderr.on("data", (data) => (stderr += data.toString()));
+    proc.on("error", reject);
+    proc.on("close", (code) => {
+      if (code === 0) return resolve();
+      reject(new Error(stderr.trim() || `7-Zip Exit Code: ${code}`));
+    });
+  });
+}
+
+// --------------------- LibreOffice Paths ---------------------
+const getLibreOfficePath = () => {
+  let basePath;
+
+  if (!app.isPackaged) {
+    // Development
+    basePath = path.join(__dirname, "..", "..", "libreoffice");
+  } else {
+    // Production: resources/app.asar.unpacked/libreoffice
+    basePath = path.join(app.getPath("userData"), "libreoffice");
+  }
+
+  switch (process.platform) {
+    case "win32":
+      return path.join(basePath, "win32");
+    case "darwin":
+      return path.join(basePath, "darwin");
+    default:
+      return path.join(basePath, "linux");
+  }
+};
+
+const getLibreOfficeZipPath = () => {
+  if (!app.isPackaged) {
+    // Development
+    switch (process.platform) {
+      case "win32":
+        return path.join(__dirname, "..", "..", "bin", "win32", "LibreOffice.zip");
+      case "darwin":
+        return path.join(__dirname, "..", "..", "bin", "darwin", "LibreOffice.zip");
+      default:
+        return path.join(__dirname, "..", "..", "bin", "linuxLibreOffice.zip");
+    }
+  } else {
+    // Production: resources/app.asar.unpacked/bin/...
+    switch (process.platform) {
+      case "win32":
+        return path.join(process.resourcesPath, "app.asar.unpacked", "bin", "win32", "LibreOffice.zip");
+      case "darwin":
+        return path.join(process.resourcesPath, "app.asar.unpacked", "bin", "darwin", "LibreOffice.zip");
+      default:
+        return path.join(process.resourcesPath, "app.asar.unpacked", "bin", "linux", "LibreOffice.zip");
     }
   }
+};
 
-  function isLibreOfficeInstalledMac() {
-    try {
-      console.log("[DEBUG] Checking LibreOffice on macOS...");
-      execSync("which soffice");
-      console.log("[DEBUG] LibreOffice found!");
-      return true;
-    } catch (err) {
-      console.log("[DEBUG] LibreOffice not found:", err.message);
-      return false;
-    }
-  }
-
-  function isLibreOfficeInstalledLinux() {
-    try {
-      console.log("[DEBUG] Checking LibreOffice on Linux...");
-      execSync("which soffice");
-      console.log("[DEBUG] LibreOffice found!");
-      return true;
-    } catch (err) {
-      console.log("[DEBUG] LibreOffice not found:", err.message);
-      return false;
-    }
-  }
-
-  function isLibreOfficeInstalled() {
-    const platform = process.platform;
-    console.log("[DEBUG] Current OS:", platform);
-    if (platform === "win32") return isLibreOfficeInstalledWin();
-    if (platform === "darwin") return isLibreOfficeInstalledMac();
-    if (platform === "linux") return isLibreOfficeInstalledLinux();
-    return false;
-  }
-
+function registerLibreOfficeIPC() {
+  // --------------------- IPC Handlers ---------------------
   ipcMain.handle("libreoffice:checkInstalled", async () => {
-    const installed = isLibreOfficeInstalled();
-    console.log("[DEBUG] checkInstalled returned:", installed);
-    return installed;
+    return fs.existsSync(getLibreOfficePath());
   });
 
-  ipcMain.handle("libreoffice:downloadAndInstall", async () => {
-    const platform = process.platform;
-    const url = DOWNLOAD_URLS[platform] || DOWNLOAD_URLS.linux;
-    const tmpPath = path.join(os.tmpdir(), path.basename(url));
+  ipcMain.handle("libreoffice:prepare", async () => {
+    const loPath = getLibreOfficePath();
+    const zipPath = getLibreOfficeZipPath();
+    const sevenZip = get7ZipPath();
 
-    console.log("[DEBUG] Downloading LibreOffice from:", url);
-    console.log("[DEBUG] Temporary path:", tmpPath);
+    if (fs.existsSync(loPath)) return true; // schon entpackt
+
+    fs.mkdirSync(loPath, { recursive: true });
 
     try {
-      // Download
-      await new Promise((resolve, reject) => {
-        const file = fs.createWriteStream(tmpPath);
-        https.get(url, (response) => {
-          console.log("[DEBUG] Download started...");
-          response.pipe(file);
-          file.on("finish", () => {
-            console.log("[DEBUG] Download completed!");
-            file.close(resolve);
-          });
-        }).on("error", (err) => {
-          console.error("[DEBUG] Download error:", err);
-          reject(err);
-        });
-      });
-
-      console.log("[DEBUG] Starting installation...");
-
-      // Function to delete temporary file with retry
-      const deleteTempFile = () => {
-        try {
-          fs.unlinkSync(tmpPath);
-          console.log("[DEBUG] Temporary file deleted:", tmpPath);
-        } catch (err) {
-          if (err.code === "EBUSY") {
-            console.log("[DEBUG] File still in use, retrying in 2 seconds...");
-            setTimeout(deleteTempFile, 2000);
-          } else {
-            console.warn("[DEBUG] Could not delete temp file:", err);
-          }
-        }
-      };
-
-      // Installation command per platform
-      let installCmd;
-      if (platform === "win32") {
-        installCmd = `powershell -Command "Start-Process msiexec -ArgumentList '/i \\"${tmpPath}\\" /quiet' -Wait -Verb RunAs"`;
-      } else if (platform === "darwin") {
-        installCmd = `hdiutil attach "${tmpPath}"`;
-      } else if (platform === "linux") {
-        installCmd = `tar -xzf "${tmpPath}" -C /tmp && sudo dpkg -i /tmp/LibreOffice*/DEBS/*.deb`;
-      }
-
-      // Execute installer and wait for completion
-      const installer = exec(installCmd, (err, stdout, stderr) => {
-        if (err) console.error(`[DEBUG] Installation error (${platform}):`, err);
-        else console.log(`[DEBUG] Installation finished (${platform})`, stdout, stderr);
-
-        // Delete temp file
-        deleteTempFile();
-      });
+      await run7zip(sevenZip, ["x", zipPath, `-o${loPath}`, "-y"]);
+      return true;
     } catch (err) {
-      console.error("[DEBUG] downloadAndInstall error:", err);
+      console.error("Error extracting LibreOffice:", err);
       throw err;
     }
   });
 }
+
+export { registerLibreOfficeIPC };

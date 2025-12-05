@@ -241,7 +241,9 @@ export const setupSteps = (): SetupStep[] => {
       title: t("setup.steps.libreoffice_title"),
       description: t("setup.steps.libreoffice_description"),
       component: ({}: SetupStepComponentProps) => {
-        const [status, setStatus] = useState("checking"); // checking | installed | not_installed | downloading
+        const [status, setStatus] = useState<
+          "checking" | "installed" | "not_installed" | "preparing"
+        >("checking");
 
         useEffect(() => {
           window.electron.libreoffice.checkInstalled().then((installed: boolean) => {
@@ -249,31 +251,31 @@ export const setupSteps = (): SetupStep[] => {
           });
         }, []);
 
-        const downloadAndInstall = async () => {
-          setStatus("downloading");
-          await window.electron.libreoffice.downloadAndInstall();
+        const prepareLibreOffice = async () => {
+          setStatus("preparing");
+          await window.electron.libreoffice.prepare(); // OS-abhängig entpacken / bereit machen
           setStatus("installed");
         };
 
         return (
           <div className="libreoffice-step">
             {status === "checking" && <p>{t("setup.steps.libreoffice_checking")}</p>}
+
             {status === "installed" && (
-              <p className="success-text">{t("setup.steps.libreoffice_installed")}</p>
+              <p className="success-text libreoffice-text">{t("setup.steps.libreoffice_installed")}</p>
             )}
+
             {status === "not_installed" && (
               <div className="flex flex-col items-center">
-                <p>{t("setup.steps.libreoffice_missing")}</p>
-                <button
-                  onClick={downloadAndInstall}
-                  className="folder-select-button"
-                >
-                  {t("setup.steps.libreoffice_install_button")}
+                <p className="libreoffice-text">{t("setup.steps.libreoffice_missing")}</p>
+                <button onClick={prepareLibreOffice} className="folder-select-button">
+                  {t("setup.steps.libreoffice_prepare_button")}
                 </button>
               </div>
             )}
-            {status === "downloading" && (
-              <p>{t("setup.steps.libreoffice_downloading")}</p>
+
+            {status === "preparing" && (
+              <p className="libreoffice-text">{t("setup.steps.libreoffice_preparing")}</p>
             )}
           </div>
         );

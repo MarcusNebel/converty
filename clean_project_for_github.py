@@ -16,6 +16,7 @@ REMOVE_DIRS = [
     "app/node_modules",         # Submodule (optional)
     "temp",                     # temporäre Ordner
     "__pycache__",              # Python-Cache, falls vorhanden
+    "libreoffice"              # interne LibreOffice-Installation, falls vorhanden
 ]
 
 # === Unnötige Dateien ===

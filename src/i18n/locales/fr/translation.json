@@ -48,7 +48,8 @@
       "libreoffice_installed": "LibreOffice est déjà installé.",
       "libreoffice_missing": "LibreOffice n'est pas installé.",
       "libreoffice_install_button": "Télécharger et installer LibreOffice",
-      "libreoffice_downloading": "Téléchargement de LibreOffice en cours…"
+      "libreoffice_downloading": "Téléchargement de LibreOffice en cours…",
+      "libreoffice_prepare_button": "Préparer LibreOffice"
     }
   },
   "home": {
