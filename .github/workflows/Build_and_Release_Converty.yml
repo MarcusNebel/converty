@@ -32,14 +32,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
+          set +e
           TAG=${{ needs.get-version.outputs.version }}
 
+          # Prüfen, ohne dass der Job bei "nicht gefunden" abbricht
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY"
           if [ $? -eq 0 ]; then
             echo "Release exists. Deleting…"
             gh release delete "$TAG" --yes --repo "$GITHUB_REPOSITORY"
           else
-            echo "Release does not exist."
+            echo "Release does not exist. Skipping deletion."
           fi
 
   create-release:
