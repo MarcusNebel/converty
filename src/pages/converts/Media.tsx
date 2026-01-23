@@ -14,6 +14,7 @@ const formats = [
   { value: "opus", label: "Opus (.opus)" },
   { value: "amr", label: "AMR (.amr)" },
   { value: "alac", label: "ALAC (.alac)" },
+  { value: "wma", label: "WMA (.wma)" },
   /* Video */
   { value: "mp4", label: "MP4 (.mp4)" },
   { value: "avi", label: "AVI (.avi)" },

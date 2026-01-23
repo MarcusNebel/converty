@@ -66,6 +66,7 @@ export function registerConvertMediaIPC() {
       container: os.platform() === "win32" ? "wav" : "amr_nb",
       audioCodec: "pcm_s16le",
     },
+    wma: { container: "asf", audioCodec: "wmav2" },
     // Video
     mp4: { container: "mp4", videoCodec: "libx264", audioCodec: "aac" },
     webm: { container: "webm", videoCodec: "libvpx-vp9", audioCodec: "libopus" },
