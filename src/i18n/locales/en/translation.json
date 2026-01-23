@@ -73,7 +73,7 @@
   "converts": {
     "media": {
       "title": "Media Conversions",
-      "subtitle": "Supported formats: MP3, WAV, AAC, FLAC, OGG, AIFF, AC3, Opus, AMR, ALAC, MP4, AVI, MKV, MOV, WMV, FLV, WEBM",
+      "subtitle": "Supported formats: MP3, WAV, AAC, FLAC, OGG, AIFF, AC3, Opus, AMR, ALAC, WMA, MP4, AVI, MKV, MOV, WMV, FLV, WEBM",
       "global_label": "Global format:",
       "mixed_formats": "Mixed formats",
       "select_files": "Select files",
